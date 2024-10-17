@@ -6,14 +6,12 @@ const avResolution = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", 
 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware)
-app.use(express.json())
-app.use(cors())
 
 const db = {
     videos: [
         {id: 1, title: 'first', author: 'n1'},
         {id: 2, title: 'sec', author: 'n2'},
-        {id: 3, title: 'therd', author: 'n3'},
+        {id: 3, title: 'third', author: 'n3'},
     ]
 }
 app.get('/', (req, res) => {
