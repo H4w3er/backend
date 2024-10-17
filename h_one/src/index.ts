@@ -1,11 +1,13 @@
 import express, {Request, Response} from 'express'
 
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 const avResolution = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware)
+app.use(express.json())
+app.use(cors())
 
 const db = {
     videos: [
