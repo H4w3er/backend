@@ -14,7 +14,16 @@ const db = {
         {id: 3, title: 'therd', author: 'n3'},
     ]
 }
-
+app.get('/', (req, res) => {
+    res.status(200).json({version: '1.0'});
+})
+app.get('/videos/:id', (req, res) => {
+    const foundVideo = db.videos.find((c => c.id === +req.params.id))
+    if (!foundVideo) {
+        res.sendStatus(404);
+        return;
+    } else res.json(foundVideo)
+})
 app.get('/videos/:id', (req, res) => {
     const foundVideo = db.videos.find((c => c.id === +req.params.id))
     if (!foundVideo) {
