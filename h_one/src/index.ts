@@ -24,18 +24,11 @@ app.get('/videos/:id', (req, res) => {
         return;
     } else res.json(foundVideo)
 })
-app.get('/videos/:id', (req, res) => {
-    const foundVideo = db.videos.find((c => c.id === +req.params.id))
-    if (!foundVideo) {
-        res.sendStatus(404);
-        return;
-    } else res.json(foundVideo)
-})
 app.get('/videos', (req, res) => {
-    if (req.query.title) { const foundVideos = db.videos
-        .filter(c => c.title.indexOf(req.query.title as string) > -1)
+    if (req.query.title) {
+        const foundVideos = db.videos.filter(c => c.title.indexOf(req.query.title as string) > -1)
         res.json(foundVideos)
-    } else res.json(db.videos).status(200)
+    } else res.status(200).json(db.videos)
 })
 app.post('/videos', (req, res) => {
     if (!req.body.title){
@@ -72,7 +65,7 @@ app.delete('/videos/:id', (req, res) => {
 })
 app.delete('/testing/all-content', (req, res) => {
     db.videos = [];
-    res.status(204)
+    res.sendStatus(204)
 })
 app.put('/videos/:id', (req, res) => {
     if (!req.body.title) {
