@@ -31,13 +31,14 @@ app.get('/videos', (req, res) => {
     } else res.status(200).json(db.videos)
 })
 app.post('/videos', (req, res) => {
+    const resol = req.body.availableResolutions.toString();
     if (!req.body.title){
         res.sendStatus(400);
         return;
     } else if (!req.body.author){
         res.sendStatus(400);
         return;
-    } else if (!(avResolution.includes(req.body.availableResolution))){
+    } else if (!(avResolution.includes(resol))){
         res.sendStatus(400);
         return;
     }
@@ -49,7 +50,7 @@ app.post('/videos', (req, res) => {
         minAgeRestriction: null,
         createdAt: new Date().toISOString(),
         publicationDate: new Date().toISOString(),
-        availableResolution: [req.body.availableResolution]
+        availableResolutions: req.body.availableResolutions
     }
     db.videos.push(newVideo)
     res.status(201).json(newVideo)
@@ -63,7 +64,7 @@ app.delete('/videos/:id', (req, res) => {
         res.sendStatus(204);
     }
 })
-app.delete('/testing/all-content', (req, res) => {
+app.delete('/testing/all-data', (req, res) => {
     db.videos = [];
     res.sendStatus(204)
 })
