@@ -48,8 +48,8 @@ app.post('/videos', (req, res) => {
         author: req.body.author,
         canBeDownloaded: true,
         minAgeRestriction: null,
-        createdAt: new Date().toISOString(),
-        publicationDate: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString(),
+        createdAt: new Date(new Date().setDate(new Date().getDate() -1)).toISOString(),
+        publicationDate: new Date().toISOString(),
         availableResolutions: req.body.availableResolutions
     }
     db.videos.push(newVideo)
