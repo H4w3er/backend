@@ -32,7 +32,7 @@ app.get('/videos', (req, res) => {
 })
 app.post('/videos', (req, res) => {
     if (!req.body.title){
-        res.sendStatus(400);
+        res.sendStatus(400)
         return;
     } else if (!req.body.author){
         res.sendStatus(400);
