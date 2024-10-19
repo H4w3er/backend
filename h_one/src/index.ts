@@ -7,13 +7,13 @@ const avResolution = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware)
 
-const db = {
-    videos: [
-        {id: 1, title: 'first', author: 'n1'},
-        {id: 2, title: 'sec', author: 'n2'},
-        {id: 3, title: 'third', author: 'n3'},
-    ]
+type DBType = { // типизация базы данных (что мы будем в ней хранить)
+    videos: any[]
 }
+const db: DBType = {
+    videos: []
+}
+
 app.get('/', (req, res) => {
     res.status(200).json({version: '1.0'});
 })
@@ -31,14 +31,16 @@ app.get('/videos', (req, res) => {
     } else res.status(200).json(db.videos)
 })
 app.post('/videos', (req, res) => {
-    const resol = req.body.availableResolutions.toString();
     if (!req.body.title){
         res.sendStatus(400);
         return;
     } else if (!req.body.author){
         res.sendStatus(400);
         return;
-    } else if (!(avResolution.includes(resol))){
+    } else if (!req.body.availableResolutions) {
+        res.sendStatus(400);
+        return;
+    } else if (!(avResolution.includes(req.body.availableResolutions.toString()))){
         res.sendStatus(400);
         return;
     }
