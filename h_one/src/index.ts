@@ -44,7 +44,7 @@ app.get('/videos', (req, res) => {
 })
 app.post('/videos', (req, res) => {
     if (!req.body.title){
-        res.status(400).send({errorMessages: [{message: "invalid title", field: "title"}]})
+        res.status(400).send({errorsMessages: [{message: "invalid title", field: "title"}]})
         return;
     } else if (!req.body.author){
         res.sendStatus(400);
@@ -88,12 +88,12 @@ app.put('/videos/:id', (req, res) => {
         valid.push({message: "invalid title", field: "title"})
     }
     if(req.body.canBeDownloaded) {
-        if (req.body.canBeDownloaded!==true || req.body.canBeDownloaded!==false){
+        if (req.body.canBeDownloaded!==true && req.body.canBeDownloaded!==false){
             valid.push({message: "need to be true or false", field: "canBeDownloaded"})
         }
     }
     if (valid.length > 0) {
-        res.status(400).send({errorMessages: valid});
+        res.status(400).send({errorsMessages: valid});
         return;
     }
     const updatedVideo = db.videos.find(c => c.id === +req.params.id);
