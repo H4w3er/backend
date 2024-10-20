@@ -32,7 +32,7 @@ app.get('/videos', (req, res) => {
 })
 app.post('/videos', (req, res) => {
     if (!req.body.title){
-        res.sendStatus(400)
+        res.status(400).send({errorMessages: [{message: "invalid title", field: "title"}]})
         return;
     } else if (!req.body.author){
         res.sendStatus(400);
@@ -72,15 +72,18 @@ app.delete('/testing/all-data', (req, res) => {
 })
 app.put('/videos/:id', (req, res) => {
     if (!req.body.title) {
-        res.sendStatus(400)
+        res.status(400).send({errorMessages: [{message: "invalid title", field: "title"}]})
         return;
-    }
-    const updatedVideo = db.videos.find((c => c.id === +req.params.id))
+    } /*else if (req.body.canBeDownloaded) {
+        res.status(400).send({errorMessages: [{message: "invalid title", field: "title"}]})
+    }*/
+    const updatedVideo = db.videos.find(c => c.id === +req.params.id);
     if (!updatedVideo) {
         res.sendStatus(404);
         return;
-    } else updatedVideo.title = req.body.title;
-    res.status(204)
+    }
+    updatedVideo.title = req.body.title;
+    res.sendStatus(204)
 })
 
 app.listen (port, ()=>{
