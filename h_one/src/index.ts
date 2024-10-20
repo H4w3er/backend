@@ -1,4 +1,5 @@
 import express, {Request, Response} from 'express'
+import any = jasmine.any;
 
 const app = express()
 const port = process.env.PORT || 3003;
@@ -11,7 +12,18 @@ type DBType = { // типизация базы данных (что мы буд�
     videos: any[]
 }
 const db: DBType = {
-    videos: []
+    videos: [{
+        "id": 1729447865592,
+        "title": "aasda",
+        "author": "some author",
+        "canBeDownloaded": false,
+        "minAgeRestriction": null,
+        "createdAt": "2024-10-19T18:11:05.592Z",
+        "publicationDate": "2024-10-20T18:11:05.593Z",
+        "availableResolutions": [
+            "P240"
+        ]
+    }]
 }
 
 app.get('/', (req, res) => {
@@ -71,12 +83,19 @@ app.delete('/testing/all-data', (req, res) => {
     res.sendStatus(204)
 })
 app.put('/videos/:id', (req, res) => {
+    const valid = []
     if (!req.body.title) {
-        res.status(400).send({errorMessages: [{message: "invalid title", field: "title"}]})
+        valid.push({message: "invalid title", field: "title"})
+    }
+    if(req.body.canBeDownloaded) {
+        if (req.body.canBeDownloaded!==true || req.body.canBeDownloaded!==false){
+            valid.push({message: "need to be true or false", field: "canBeDownloaded"})
+        }
+    }
+    if (valid.length > 0) {
+        res.status(400).send({errorMessages: valid});
         return;
-    } /*else if (req.body.canBeDownloaded) {
-        res.status(400).send({errorMessages: [{message: "invalid title", field: "title"}]})
-    }*/
+    }
     const updatedVideo = db.videos.find(c => c.id === +req.params.id);
     if (!updatedVideo) {
         res.sendStatus(404);
