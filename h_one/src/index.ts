@@ -35,7 +35,7 @@ app.post('/videos', (req, res) => {
     const valids = []
     if (!req.body.title) {
         valids.push({message: "invalid title", field: "title"})
-    } else if (req.body.title>20) {
+    } else if (req.body.title.length>20) {
         valids.push({message: "invalid title", field: "title"})
     }
     if (!req.body.author) {
@@ -80,12 +80,12 @@ app.put('/videos/:id', (req, res) => {
     const valid = []
     if (!req.body.title) {
         valid.push({message: "invalid title", field: "title"})
-    } else if (req.body.title>20) {
+    } else if (req.body.title.length>20) {
         valid.push({message: "invalid title", field: "title"})
     }
     if (!req.body.author) {
         valid.push({message: "invalid author", field: "author"})
-    } else if (req.body.author>20) {
+    } else if (req.body.author.length>20) {
         valid.push({message: "invalid author", field: "author"})
     }
     if(req.body.canBeDownloaded) {
