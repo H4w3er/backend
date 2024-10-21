@@ -43,10 +43,10 @@ app.get('/videos', (req, res) => {
     } else res.status(200).json(db.videos)
 })
 app.post('/videos', (req, res) => {
-    if (!req.body.title){
+    if (!req.body.title  || req.body.title.length>40){
         res.status(400).send({errorsMessages: [{message: "invalid title", field: "title"}]})
         return;
-    } else if (!req.body.author){
+    } else if (!req.body.author || req.body.author.length>20){
         res.sendStatus(400);
         return;
     } else if (!req.body.availableResolutions) {
@@ -102,21 +102,15 @@ app.put('/videos/:id', (req, res) => {
         return;
     }
     updatedVideo.title = req.body.title;
+    updatedVideo.author = req.body.author;
+    updatedVideo.canBeDownloaded = req.body.canBeDownloaded;
+    updatedVideo.minAgeRestriction = req.body.minAgeRestriction;
+    updatedVideo.publicationDate = req.body.publicationDate;
+    updatedVideo.availableResolutions = req.body.availableResolutions;
+
     res.sendStatus(204)
 })
 
 app.listen (port, ()=>{
     console.log(`Example listening on port ${port}`)
 })
-
-
-/*export const video1: any /!*VideoDBType*!/ = {
-    id: Date.now() + Math.random(),
-    title: 't' + Date.now() + Math.random(),
-    // author: 'a' + Date.now() + Math.random(),
-    // canBeDownloaded: true,
-    // minAgeRestriction: null,
-    // createdAt: new Date().toISOString(),
-    // publicationDate: new Date().toISOString(),
-    // availableResolution: [Resolutions.P240],
-}*/
