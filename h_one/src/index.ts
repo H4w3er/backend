@@ -47,13 +47,13 @@ app.post('/videos', (req, res) => {
         res.status(400).send({errorsMessages: [{message: "invalid title", field: "title"}]})
         return;
     } else if (!req.body.author || req.body.author.length>20){
-        res.sendStatus(400);
+        res.status(400).send({errorsMessages: [{message: "invalid author", field: "author"}]})
         return;
     } else if (!req.body.availableResolutions) {
         res.sendStatus(400);
         return;
     } else if (!(avResolution.includes(req.body.availableResolutions.toString()))){
-        res.sendStatus(400);
+        res.status(400).send({errorsMessages: [{message: "invalid resolution", field: "availableResolutions"}]})
         return;
     }
     const newVideo = {
@@ -84,13 +84,24 @@ app.delete('/testing/all-data', (req, res) => {
 })
 app.put('/videos/:id', (req, res) => {
     const valid = []
-    if (!req.body.title) {
+    if (!req.body.title || req.body.title.length>40) {
         valid.push({message: "invalid title", field: "title"})
+    }
+    if (!req.body.author || req.body.title.author>20) {
+        valid.push({message: "invalid author", field: "author"})
     }
     if(req.body.canBeDownloaded) {
         if (req.body.canBeDownloaded!==true && req.body.canBeDownloaded!==false){
             valid.push({message: "need to be true or false", field: "canBeDownloaded"})
         }
+    }
+    if(req.body.minAgeRestriction) {
+        if (req.body.minAgeRestriction<1 || req.body.minAgeRestriction>18){
+            valid.push({message: "need to be more than 1 and less than 18", field: "minAgeRestriction"})
+        }
+    }
+    if (!(avResolution.includes(req.body.availableResolutions.toString()))) {
+        res.status(400).send({errorsMessages: [{message: "invalid resolution", field: "availableResolutions"}]})
     }
     if (valid.length > 0) {
         res.status(400).send({errorsMessages: valid});
