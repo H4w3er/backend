@@ -101,6 +101,9 @@ app.put('/videos/:id', (req, res) => {
     if (!(req.body.availableResolutions.every((c: string) => avResolution.includes(c)))){
         valid.push({message: "invalid resolution", field: "availableResolutions"})
     }
+    if ((new Date(req.body.publicationDate)).getFullYear() < 2000){
+        valid.push({message: "invalid publicationDate", field: "publicationDate"})
+    }
     if (valid.length > 0) {
         res.status(400).send({errorsMessages: valid});
         return;
