@@ -12,18 +12,7 @@ type DBType = { // типизация базы данных (что мы буд�
     videos: any[]
 }
 const db: DBType = {
-    videos: [{
-        "id": 1729447865592,
-        "title": "aasda",
-        "author": "some author",
-        "canBeDownloaded": false,
-        "minAgeRestriction": null,
-        "createdAt": "2024-10-19T18:11:05.592Z",
-        "publicationDate": "2024-10-20T18:11:05.593Z",
-        "availableResolutions": [
-            "P240"
-        ]
-    }]
+    videos: []
 }
 
 app.get('/', (req, res) => {
@@ -43,17 +32,22 @@ app.get('/videos', (req, res) => {
     } else res.status(200).json(db.videos)
 })
 app.post('/videos', (req, res) => {
-    if (!req.body.title  || req.body.title.length>40){
-        res.status(400).send({errorsMessages: [{message: "invalid title", field: "title"}]})
-        return;
-    } else if (!req.body.author || req.body.author.length>20){
-        res.status(400).send({errorsMessages: [{message: "invalid author", field: "author"}]})
-        return;
-    } else if (!req.body.availableResolutions) {
-        res.sendStatus(400);
-        return;
-    } else if (!(avResolution.includes(req.body.availableResolutions.toString()))){
-        res.status(400).send({errorsMessages: [{message: "invalid resolution", field: "availableResolutions"}]})
+    const valids = []
+    if (!req.body.title) {
+        valids.push({message: "invalid title", field: "title"})
+    } else if (req.body.title>20) {
+        valids.push({message: "invalid title", field: "title"})
+    }
+    if (!req.body.author) {
+        valids.push({message: "invalid author", field: "author"})
+    } else if (req.body.author>20) {
+        valids.push({message: "invalid author", field: "author"})
+    }
+    if (!(req.body.availableResolutions.every((c: string) => avResolution.includes(c)))){
+        valids.push({message: "invalid resolution", field: "availableResolutions"})
+    }
+    if (valids.length > 0) {
+        res.status(400).send({errorsMessages: valids});
         return;
     }
     const newVideo = {
@@ -84,12 +78,17 @@ app.delete('/testing/all-data', (req, res) => {
 })
 app.put('/videos/:id', (req, res) => {
     const valid = []
-    if (!req.body.title || req.body.title.length>40) {
+    if (!req.body.title) {
+        valid.push({message: "invalid title", field: "title"})
+    } else if (req.body.title>20) {
         valid.push({message: "invalid title", field: "title"})
     }
-    if (!req.body.author || req.body.title.author>20) {
+    if (!req.body.author) {
+        valid.push({message: "invalid author", field: "author"})
+    } else if (req.body.author>20) {
         valid.push({message: "invalid author", field: "author"})
     }
+
     if(req.body.canBeDownloaded) {
         if (req.body.canBeDownloaded!==true && req.body.canBeDownloaded!==false){
             valid.push({message: "need to be true or false", field: "canBeDownloaded"})
@@ -100,8 +99,8 @@ app.put('/videos/:id', (req, res) => {
             valid.push({message: "need to be more than 1 and less than 18", field: "minAgeRestriction"})
         }
     }
-    if (!(avResolution.includes(req.body.availableResolutions.toString()))) {
-        res.status(400).send({errorsMessages: [{message: "invalid resolution", field: "availableResolutions"}]})
+    if (!(req.body.availableResolutions.every((c: string) => avResolution.includes(c)))){
+        valid.push({message: "invalid resolution", field: "availableResolutions"})
     }
     if (valid.length > 0) {
         res.status(400).send({errorsMessages: valid});
