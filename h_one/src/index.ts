@@ -35,7 +35,7 @@ app.post('/videos', (req, res) => {
     const valids = []
     if (!req.body.title) {
         valids.push({message: "invalid title", field: "title"})
-    } else if (req.body.title.length>20) {
+    } else if (req.body.title.length>40) {
         valids.push({message: "invalid title", field: "title"})
     }
     if (!req.body.author) {
@@ -80,7 +80,7 @@ app.put('/videos/:id', (req, res) => {
     const valid = []
     if (!req.body.title) {
         valid.push({message: "invalid title", field: "title"})
-    } else if (req.body.title.length>20) {
+    } else if (req.body.title.length>40) {
         valid.push({message: "invalid title", field: "title"})
     }
     if (!req.body.author) {
