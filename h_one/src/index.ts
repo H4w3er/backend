@@ -40,7 +40,7 @@ app.post('/videos', (req, res) => {
     }
     if (!req.body.author) {
         valids.push({message: "invalid author", field: "author"})
-    } else if (req.body.author>20) {
+    } else if (req.body.author.length>20) {
         valids.push({message: "invalid author", field: "author"})
     }
     if (!(req.body.availableResolutions.every((c: string) => avResolution.includes(c)))){
@@ -88,7 +88,6 @@ app.put('/videos/:id', (req, res) => {
     } else if (req.body.author>20) {
         valid.push({message: "invalid author", field: "author"})
     }
-
     if(req.body.canBeDownloaded) {
         if (req.body.canBeDownloaded!==true && req.body.canBeDownloaded!==false){
             valid.push({message: "need to be true or false", field: "canBeDownloaded"})
