@@ -2,6 +2,7 @@ import {Router} from "express";
 import {blogsRepository} from "../repositories/blogs-repository";
 import {body, validationResult} from "express-validator";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {authMiddleware} from "../middlewares/authMiddleware";
 
 export const blogsRouter = Router({})
 
@@ -17,6 +18,7 @@ blogsRouter.get('/', (req, res) => {
     res.send(blogs);
 })
 blogsRouter.post('/',
+    authMiddleware,
     nameValidation,
     descriptionValidation,
     websiteUrlValidation,
@@ -33,6 +35,7 @@ blogsRouter.get('/:id', (req, res) => {
     } else res.sendStatus(404);
 })
 blogsRouter.put('/:id',
+    authMiddleware,
     nameValidation,
     descriptionValidation,
     websiteUrlValidation,
@@ -43,7 +46,7 @@ blogsRouter.put('/:id',
         res.sendStatus(204)
     } else res.sendStatus(404)
 })
-blogsRouter.delete('/:id', (req, res) => {
+blogsRouter.delete('/:id', authMiddleware,  (req, res) => {
     if (blogsRepository.deleteBlog(req.params.id)){
         res.sendStatus(204)
     } else {
@@ -51,3 +54,6 @@ blogsRouter.delete('/:id', (req, res) => {
     }
 })
 
+blogsRouter.delete('/testing/all-data', (req, res) => {
+    if (blogsRepository.deleteAll()) res.sendStatus(204)
+})

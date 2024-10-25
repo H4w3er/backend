@@ -33,5 +33,10 @@ export const blogsRepository = {
             db.blogs = db.blogs.filter((c => c.id !== id));
             return true;
         }
+    },
+    deleteAll(){
+        db.blogs = []
+        db.posts = []
+        return true;
     }
 }
