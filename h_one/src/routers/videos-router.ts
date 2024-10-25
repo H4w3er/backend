@@ -3,6 +3,8 @@ import {Router} from "express";
 export const videosRouter = Router({})
 const avResolution = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"]
 
+
+
 videosRouter.get('/:id', (req, res) => {
     const foundVideo = db.videos.find((c => c.id === +req.params.id))
     if (!foundVideo) {
