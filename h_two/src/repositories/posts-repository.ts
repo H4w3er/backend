@@ -5,17 +5,19 @@ export const postsRepository = {
         return db.posts
     },
     findPostById(id: string){
-        return db.blogs.find(c => c.id === id)
+        return db.posts.find(c => c.id === id)
     },
-    createPost(name: string, description: string, websiteUrl: string){
-        const newBlog = {
+    createPost(title: string, shortDescription: string, content: string, blogId: string){
+        const newPost = {
             id: (+(Date.now())).toString(),
-            name: name,
-            description: description,
-            websiteUrl: websiteUrl
+            title: title,
+            shortDescription: shortDescription,
+            content: content,
+            blogId: blogId,
+            blogName: db.blogs.find(c => c.id === blogId).name
         }
-        db.blogs.push(newBlog)
-        return newBlog;
+        db.posts.push(newPost)
+        return newPost;
     },
     updatePost(id: string, name: string, description: string, websiteUrl: string){
         let blog = db.blogs.find(c => c.id === id)
@@ -26,12 +28,12 @@ export const postsRepository = {
             return true;
         } else return false;
     },
-    deletePost(id: string){
+    /*deletePost(id: string){
         if ((db.blogs).length === db.blogs.filter((c => c.id !== id)).length){
             return false;
         } else {
             db.blogs = db.blogs.filter((c => c.id !== id));
             return true;
         }
-    },
+    },*/
 }
