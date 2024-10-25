@@ -14,26 +14,33 @@ export const postsRepository = {
             shortDescription: shortDescription,
             content: content,
             blogId: blogId,
+            // @ts-ignore
             blogName: db.blogs.find(c => c.id === blogId).name
         }
         db.posts.push(newPost)
         return newPost;
     },
-    updatePost(id: string, name: string, description: string, websiteUrl: string){
-        let blog = db.blogs.find(c => c.id === id)
-        if (blog) {
-            blog.name = name
-            blog.description = description
-            blog.description = description
+    updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string){
+        let post = db.posts.find(c => c.id === id)
+        if (post) {
+            post.title = title
+            post.shortDescription = shortDescription
+            post.content = content
+            post.blogId = blogId
             return true;
         } else return false;
     },
-    /*deletePost(id: string){
-        if ((db.blogs).length === db.blogs.filter((c => c.id !== id)).length){
+    deletePost(id: string){
+        if ((db.posts).length === db.posts.filter((c => c.id !== id)).length){
             return false;
         } else {
-            db.blogs = db.blogs.filter((c => c.id !== id));
+            db.posts = db.posts.filter((c => c.id !== id));
             return true;
         }
-    },*/
+    },
+    isBlog(blogId: string){
+        if (db.blogs.find(c => c.id === blogId)){
+            return true;
+        } else return false
+    }
 }

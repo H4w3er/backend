@@ -1,23 +1,30 @@
 import {Router} from "express";
 import {postsRepository} from "../repositories/posts-repository";
-/*import {body, validationResult} from "express-validator";
+import {body, validationResult} from "express-validator";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authMiddleware} from "../middlewares/authMiddleware";
 
 
-const nameValidation = body('name').trim().isLength({min:1, max:15}).withMessage("Name should be more than 1 and less than 15");
-const descriptionValidation = body('description').isLength({min:1, max:500}).withMessage("Description should be more than 1 and less than 500");
-const websiteUrlValidation = body('websiteUrl').isLength({min:1, max:100}).withMessage("Bad length").custom(value => {
-    const pattern = /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/
-    return pattern.test(value);
-}).withMessage("Bad URL")*/
+const titleValidation = body('title').trim().isLength({min:1, max:30}).withMessage("Title should be more than 1 and less than 30");
+const shortDescriptionValidation = body('shortDescription').isLength({min:1, max:100}).withMessage("shortDescription should be more than 1 and less than 100");
+const contentValidation = body('content').isLength({min:1, max:1000}).withMessage("Content should be more than 1 and less than 1000")
+const  blogIdValidation= body('blogId').custom(value => {
+    return postsRepository.isBlog(value);
+}).withMessage("Blog not found")
 
 export const postsRouter = Router({})
+
 postsRouter.get('/', (req, res) => {
     let posts = postsRepository.findPosts()
     res.send(posts);
 })
 postsRouter.post('/',
+    authMiddleware,
+    titleValidation,
+    shortDescriptionValidation,
+    contentValidation,
+    blogIdValidation,
+    inputValidationMiddleware,
     (req, res) => {
         const newPost = postsRepository.createPost(req.body.title, req.body.shortDescription,
             req.body.content, req.body.blogId)
@@ -31,18 +38,24 @@ postsRouter.get('/:id', (req, res) => {
     } else res.sendStatus(404);
 })
 postsRouter.put('/:id',
+    authMiddleware,
+    titleValidation,
+    shortDescriptionValidation,
+    contentValidation,
+    blogIdValidation,
+    inputValidationMiddleware,
     (req, res) => {
-        if(postsRepository.updatePost(req.params.id, req.body.name, req.body.description,
-            req.body.websiteUrl)) {
+        if(postsRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription,
+            req.body.content, req.body.blogId)) {
             res.sendStatus(204)
         } else res.sendStatus(404)
     })
-/*
-postsRouter.delete('/:id', authMiddleware,  (req, res) => {
-    if (blogsRepository.deleteBlog(req.params.id)){
+
+postsRouter.delete('/:id', authMiddleware,
+    (req, res) => {
+    if (postsRepository.deletePost(req.params.id)){
         res.sendStatus(204)
     } else {
         res.sendStatus(404)
     }
 })
-*/

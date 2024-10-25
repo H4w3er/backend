@@ -53,7 +53,6 @@ blogsRouter.delete('/:id', authMiddleware,  (req, res) => {
         res.sendStatus(404)
     }
 })
-
 blogsRouter.delete('/testing/all-data', (req, res) => {
     if (blogsRepository.deleteAll()) res.sendStatus(204)
 })
