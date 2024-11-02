@@ -1,7 +1,7 @@
 import express, {Request, Response} from 'express'
 import {blogsRouter} from "./routers/blogs-router";
 import {postsRouter} from "./routers/posts-router";
-import {blogsRepository} from "./repositories/blogs-repository";
+import {blogsRepository} from "./repositories/blogs-db-repository";
 import {SETTINGS} from "./settings";
 import {runDb} from "./db/mongo-db";
 

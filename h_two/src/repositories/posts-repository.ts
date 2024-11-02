@@ -22,7 +22,7 @@ export const postsRepository = {
         db.posts.push(newPost)
         return newPost;
     },
-    
+
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean>{
         let post = db.posts.find(c => c.id === id)
         if (post) {
