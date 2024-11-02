@@ -1,13 +1,14 @@
 import {db} from "../db/db";
+import {PostDbType} from "../db/posts-type-db";
 
 export const postsRepository = {
-    findPosts(){
+    async findPosts(): Promise<PostDbType[]>{
         return db.posts
     },
-    findPostById(id: string){
+    async findPostById(id: string): Promise<PostDbType | undefined>{
         return db.posts.find(c => c.id === id)
     },
-    createPost(title: string, shortDescription: string, content: string, blogId: string){
+    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostDbType>{
         const newPost = {
             id: (+(Date.now())).toString(),
             title: title,
@@ -20,7 +21,7 @@ export const postsRepository = {
         db.posts.push(newPost)
         return newPost;
     },
-    updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string){
+    async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean>{
         let post = db.posts.find(c => c.id === id)
         if (post) {
             post.title = title
@@ -30,7 +31,7 @@ export const postsRepository = {
             return true;
         } else return false;
     },
-    deletePost(id: string){
+    async deletePost(id: string): Promise<boolean>{
         if ((db.posts).length === db.posts.filter((c => c.id !== id)).length){
             return false;
         } else {
@@ -38,7 +39,7 @@ export const postsRepository = {
             return true;
         }
     },
-    isBlog(blogId: string){
+    async isBlog(blogId: string): Promise<boolean>{
         if (db.blogs.find(c => c.id === blogId)){
             return true;
         } else return false
