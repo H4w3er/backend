@@ -3,6 +3,7 @@ import {blogsRouter} from "./routers/blogs-router";
 import {postsRouter} from "./routers/posts-router";
 import {blogsRepository} from "./repositories/blogs-repository";
 import {SETTINGS} from "./settings";
+import {runDb} from "./db/mongo-db";
 
 const app = express()
 
@@ -19,6 +20,11 @@ app.delete('/testing/all-data', async (req, res) => {
     if (await blogsRepository.deleteAll()) res.sendStatus(204)
 })
 
-app.listen (SETTINGS.PORT, ()=>{
-    console.log(`Example listening on port ${SETTINGS.PORT}`)
-})
+const startApp = async () =>{
+    await runDb()
+    app.listen (SETTINGS.PORT, ()=>{
+        console.log(`Example listening on port ${SETTINGS.PORT}`)
+    })
+}
+
+startApp()

@@ -16,11 +16,13 @@ export const postsRepository = {
             content: content,
             blogId: blogId,
             // @ts-ignore
-            blogName: db.blogs.find(c => c.id === blogId).name
+            blogName: db.blogs.find(c => c.id === blogId).name,
+            createdAt: new Date().toISOString()
         }
         db.posts.push(newPost)
         return newPost;
     },
+    
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean>{
         let post = db.posts.find(c => c.id === id)
         if (post) {

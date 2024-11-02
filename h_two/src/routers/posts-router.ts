@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {postsRepository} from "../repositories/posts-repository";
+import {postsRepository} from "../repositories/posts-db-repository";
 import {body, validationResult} from "express-validator";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authMiddleware} from "../middlewares/authMiddleware";
