@@ -15,8 +15,8 @@ app.use(SETTINGS.PATH.POSTS, postsRouter)
 app.get('/', (req, res) => {
     res.status(200).json({version: '1.0'});
 })
-app.delete('/testing/all-data', (req, res) => {
-    if (blogsRepository.deleteAll()) res.sendStatus(204)
+app.delete('/testing/all-data', async (req, res) => {
+    if (await blogsRepository.deleteAll()) res.sendStatus(204)
 })
 
 app.listen (SETTINGS.PORT, ()=>{
