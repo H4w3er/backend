@@ -31,9 +31,9 @@ postsRouter.post('/',
     blogIdValidation,
     inputValidationMiddleware,
     async (req, res) => {
-    const id:ObjectId = req.body.blogId;
-    const blogIdd = new ObjectId(id)
-    const found = await blogCollection.findOne({_id: blogIdd})
+    /*const id:ObjectId = req.body.blogId;
+    const blogIdd = new ObjectId(id)*/
+    const found = await blogCollection.findOne({id: req.body.blogId})
         const blogName = found?.name
         if (blogName != null) {
             const newPost = await postsRepository.createPost(req.body.title, req.body.shortDescription,
@@ -43,8 +43,8 @@ postsRouter.post('/',
     })
 
 postsRouter.get('/:id', async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    let post = await postsRepository.findPostById(id)
+    //const id = new ObjectId(req.params.id);
+    let post = await postsRepository.findPostById(req.params.id)
     if (post){
         res.status(200).send(post)
     } else res.sendStatus(404);
@@ -58,8 +58,8 @@ postsRouter.put('/:id',
     blogIdValidation,
     inputValidationMiddleware,
     async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    if(await postsRepository.updatePost(id, req.body.title, req.body.shortDescription,
+    //const id = new ObjectId(req.params.id);
+    if(await postsRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription,
         req.body.content, req.body.blogId)) {
         res.sendStatus(204)
     } else res.sendStatus(404)
@@ -67,8 +67,8 @@ postsRouter.put('/:id',
 
 postsRouter.delete('/:id', authMiddleware,
     async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    if (await postsRepository.deletePost(id)){
+    //const id = new ObjectId(req.params.id);
+    if (await postsRepository.deletePost(req.params.id)){
         res.sendStatus(204)
     } else {
         res.sendStatus(404)

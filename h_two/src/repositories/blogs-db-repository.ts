@@ -6,11 +6,12 @@ export const blogsRepository = {
     async findBlogs(): Promise<BlogDbType[]>{
         return blogCollection.find({}).toArray()
     },
-    async findBlogsById(id: ObjectId): Promise<BlogDbType | null>{
-        return await blogCollection.findOne({_id: id})
+    async findBlogsById(id: string): Promise<BlogDbType | null>{
+        return await blogCollection.findOne({id: id})
     },
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogDbType>{
         const newBlog = {
+            id: (+(Date.now())).toString(),
             name: name,
             description: description,
             websiteUrl: websiteUrl,
@@ -20,12 +21,12 @@ export const blogsRepository = {
         await blogCollection.insertOne(newBlog)
         return newBlog;
     },
-    async updateBlog(id: ObjectId, name: string, description: string, websiteUrl: string): Promise<boolean>{
-        const result = await blogCollection.updateOne({_id: id}, {$set:{name: name, description: description, websiteUrl: websiteUrl}})
+    async updateBlog(id: string, name: string, description: string, websiteUrl: string): Promise<boolean>{
+        const result = await blogCollection.updateOne({id: id}, {$set:{name: name, description: description, websiteUrl: websiteUrl}})
         return result.matchedCount === 1;
     },
-    async deleteBlog(id: ObjectId): Promise<boolean>{
-        const result = await blogCollection.deleteOne({_id: id})
+    async deleteBlog(id: string): Promise<boolean>{
+        const result = await blogCollection.deleteOne({id: id})
         return result.deletedCount === 1;
     },
     async deleteAll(): Promise<boolean>{
@@ -33,9 +34,9 @@ export const blogsRepository = {
         await postCollection.deleteMany()
         return true;
     },
-    async isBlog(blogId: ObjectId): Promise<boolean>{
-        const id = new ObjectId(blogId)
-        const result = await blogCollection.countDocuments({_id: id})
+    async isBlog(blogId: string): Promise<boolean>{
+        //const id = new ObjectId(blogId)
+        const result = await blogCollection.countDocuments({id: blogId})
         return result === 1;
     }
 }
