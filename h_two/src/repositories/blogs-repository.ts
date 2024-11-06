@@ -2,7 +2,7 @@ import {db} from "../db/db";
 import {BlogDbType} from "../db/blogs-type-db";
 
 export const blogsRepository = {
-    async findBlogs(): Promise<BlogDbType[]>{
+    /*async findBlogs(): Promise<BlogDbType[]>{
         return db.blogs
     },
     async findBlogsById(id: string): Promise<BlogDbType | undefined>{
@@ -41,5 +41,5 @@ export const blogsRepository = {
         db.blogs = []
         db.posts = []
         return true;
-    }
+    }*/
 }

@@ -2,7 +2,7 @@ import {db} from "../db/db";
 import {PostDbType} from "../db/posts-type-db";
 
 export const postsRepository = {
-    async findPosts(): Promise<PostDbType[]>{
+    /*async findPosts(): Promise<PostDbType[]>{
         return db.posts
     },
     async findPostById(id: string): Promise<PostDbType | undefined>{
@@ -10,7 +10,7 @@ export const postsRepository = {
     },
     async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostDbType>{
         const newPost = {
-            id: (+(Date.now())).toString(),
+            //id: (+(Date.now())).toString(),
             title: title,
             shortDescription: shortDescription,
             content: content,
@@ -45,5 +45,5 @@ export const postsRepository = {
         if (db.blogs.find(c => c.id === blogId)){
             return true;
         } else return false
-    }
+    }*/
 }
