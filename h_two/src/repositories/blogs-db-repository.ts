@@ -15,7 +15,6 @@ const blogMapper = (value: any) => {
     return mappedBlog;
     } else return null;
 }
-
 export const blogsRepository = {
     async findBlogs(){
         let arrayOfBlogs = await blogCollection.find({}).toArray()

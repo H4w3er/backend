@@ -3,21 +3,21 @@ import {PostDbType} from "../db/posts-type-db";
 import {ObjectId} from "mongodb";
 
 const postMapper = (value: any) => {
-    const mappedPost = {
-        id: value._id,
-        title: value.title,
-        shortDescription: value.shortDescription,
-        content: value.content,
-        blogId: value.blogId,
-        blogName: value.blogName,
-        createdAt: value.createdAt
-    }
-    return mappedPost;
+    if (value) {
+        const mappedPost = {
+            id: value._id,
+            title: value.title,
+            shortDescription: value.shortDescription,
+            content: value.content,
+            blogId: value.blogId,
+            blogName: value.blogName,
+            createdAt: value.createdAt
+        }
+        return mappedPost;
+    } else return null;
 }
-
-
 export const postsRepository = {
-    async findPosts(): Promise<PostDbType[]>{
+    async findPosts(){
         const arrayOfPosts = await postCollection.find({}).toArray()
         return arrayOfPosts.map(value => postMapper(value))
     },
@@ -27,7 +27,7 @@ export const postsRepository = {
         return postMapper(post)
     },
     // @ts-ignore
-    async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostDbType>{
+    async createPost(title: string, shortDescription: string, content: string, blogId: string){
         const objBlogId = new ObjectId(blogId)
         const blog = await blogCollection.findOne({_id: objBlogId})
         if (blog?.name !== undefined){
