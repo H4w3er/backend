@@ -3,6 +3,7 @@ import {BlogDbType} from "../db/blogs-type-db";
 import {ObjectId} from "mongodb";
 
 const blogMapper = (value: any) => {
+    if (value) {
     const mappedBlog = {
         id: value._id,
         name: value.name,
@@ -12,10 +13,11 @@ const blogMapper = (value: any) => {
         isMembership: value.isMembership
     }
     return mappedBlog;
+    } else return null;
 }
 
 export const blogsRepository = {
-    async findBlogs(): Promise<BlogDbType[]>{
+    async findBlogs(){
         let arrayOfBlogs = await blogCollection.find({}).toArray()
         return arrayOfBlogs.map(value => blogMapper(value))
     },
@@ -24,7 +26,7 @@ export const blogsRepository = {
         const blog = await blogCollection.findOne({_id: newId})
         return blogMapper(blog)
     },
-    async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogDbType>{
+    async createBlog(name: string, description: string, websiteUrl: string){
         const newBlog = {
             //id: (+(Date.now())).toString(),
             name: name,
