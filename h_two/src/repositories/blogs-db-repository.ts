@@ -2,12 +2,27 @@ import {blogCollection, postCollection} from "../db/mongo-db";
 import {BlogDbType} from "../db/blogs-type-db";
 import {ObjectId} from "mongodb";
 
+const blogMapper = (value: any) => {
+    const mappedBlog = {
+        id: value._id,
+        name: value.name,
+        description: value.description,
+        websiteUrl: value.websiteUrl,
+        createdAt: value.createdAt,
+        isMembership: value.isMembership
+    }
+    return mappedBlog;
+}
+
 export const blogsRepository = {
     async findBlogs(): Promise<BlogDbType[]>{
-        return blogCollection.find({}).toArray()
+        let arrayOfBlogs = await blogCollection.find({}).toArray()
+        return arrayOfBlogs.map(value => blogMapper(value))
     },
-    async findBlogsById(id: ObjectId): Promise<BlogDbType | null>{
-        return await blogCollection.findOne({_id: id})
+    async findBlogsById(id: string): Promise<BlogDbType | null>{
+        const newId = new ObjectId(id);
+        const blog = await blogCollection.findOne({_id: newId})
+        return blogMapper(blog)
     },
     async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogDbType>{
         const newBlog = {
@@ -18,15 +33,18 @@ export const blogsRepository = {
             createdAt: new Date().toISOString(),
             isMembership: false
         }
-        await blogCollection.insertOne(newBlog)
-        return newBlog;
+        const idOfNewBlog = await blogCollection.insertOne(newBlog)
+        const blog = await blogCollection.findOne({_id: idOfNewBlog.insertedId})
+        return blogMapper(blog);
     },
-    async updateBlog(id: ObjectId, name: string, description: string, websiteUrl: string): Promise<boolean>{
-        const result = await blogCollection.updateOne({_id: id}, {$set:{name: name, description: description, websiteUrl: websiteUrl}})
+    async updateBlog(id: string, name: string, description: string, websiteUrl: string): Promise<boolean>{
+        const objId = new ObjectId(id);
+        const result = await blogCollection.updateOne({_id: objId}, {$set:{name: name, description: description, websiteUrl: websiteUrl}})
         return result.matchedCount === 1;
     },
-    async deleteBlog(id: ObjectId): Promise<boolean>{
-        const result = await blogCollection.deleteOne({_id: id})
+    async deleteBlog(id: string): Promise<boolean>{
+        const objId = new ObjectId(id);
+        const result = await blogCollection.deleteOne({_id: objId})
         return result.deletedCount === 1;
     },
     async deleteAll(): Promise<boolean>{
@@ -34,7 +52,7 @@ export const blogsRepository = {
         await postCollection.deleteMany()
         return true;
     },
-    async isBlog(blogId: ObjectId): Promise<boolean>{
+    async isBlog(blogId: string): Promise<boolean>{
         const id = new ObjectId(blogId)
         const result = await blogCollection.countDocuments({_id: id})
         return result === 1;

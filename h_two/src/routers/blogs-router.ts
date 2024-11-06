@@ -3,7 +3,6 @@ import {blogsRepository} from "../repositories/blogs-db-repository";
 import {body, validationResult} from "express-validator";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authMiddleware} from "../middlewares/authMiddleware";
-import {ObjectId} from "mongodb";
 
 export const blogsRouter = Router({})
 
@@ -34,8 +33,7 @@ blogsRouter.post('/',
 
 blogsRouter.get('/:id',
     async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    let blog = await blogsRepository.findBlogsById(id)
+    let blog = await blogsRepository.findBlogsById(req.params.id)
     if (blog){
         res.status(200).send(blog)
     } else res.sendStatus(404);
@@ -48,8 +46,7 @@ blogsRouter.put('/:id',
     websiteUrlValidation,
     inputValidationMiddleware,
     async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    if(await blogsRepository.updateBlog(id, req.body.name, req.body.description,
+    if(await blogsRepository.updateBlog(req.params.id, req.body.name, req.body.description,
         req.body.websiteUrl)) {
         res.sendStatus(204)
     } else res.sendStatus(404)
@@ -57,8 +54,7 @@ blogsRouter.put('/:id',
 
 blogsRouter.delete('/:id', authMiddleware,
     async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    if (await blogsRepository.deleteBlog(id)){
+    if (await blogsRepository.deleteBlog(req.params.id)){
         res.sendStatus(204)
     } else {
         res.sendStatus(404)

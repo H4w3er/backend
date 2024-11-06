@@ -1,11 +1,10 @@
 import {Router} from "express";
 import {postsRepository} from "../repositories/posts-db-repository";
-import {body, validationResult} from "express-validator";
+import {blogsRepository} from "../repositories/blogs-db-repository";
+import {body} from "express-validator";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authMiddleware} from "../middlewares/authMiddleware";
-import {blogsRepository} from "../repositories/blogs-db-repository";
 import {ObjectId} from "mongodb";
-import {blogCollection, postCollection} from "../db/mongo-db";
 
 const titleValidation = body('title').trim().isLength({min:1, max:30}).withMessage("Title should be more than 1 and less than 30");
 const shortDescriptionValidation = body('shortDescription').isLength({min:1, max:100}).withMessage("shortDescription should be more than 1 and less than 100");
@@ -31,20 +30,13 @@ postsRouter.post('/',
     blogIdValidation,
     inputValidationMiddleware,
     async (req, res) => {
-    const id:ObjectId = req.body.blogId;
-    const blogId = new ObjectId(id)
-    const found = await blogCollection.findOne({_id: blogId})
-        const blogName = found?.name
-        if (blogName != null) {
-            const newPost = await postsRepository.createPost(req.body.title, req.body.shortDescription,
-                req.body.content, req.body.blogId, blogName)
-            res.status(201).send(newPost)
-        } else throw new Error('wtf')
+    const newPost = await postsRepository.createPost(req.body.title, req.body.shortDescription,
+        req.body.content, req.body.blogId)
+        res.status(201).send(newPost)
     })
 
 postsRouter.get('/:id', async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    let post = await postsRepository.findPostById(id)
+    let post = await postsRepository.findPostById(req.params.id)
     if (post){
         res.status(200).send(post)
     } else res.sendStatus(404);
@@ -58,8 +50,7 @@ postsRouter.put('/:id',
     blogIdValidation,
     inputValidationMiddleware,
     async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    if(await postsRepository.updatePost(id, req.body.title, req.body.shortDescription,
+    if(await postsRepository.updatePost(req.params.id, req.body.title, req.body.shortDescription,
         req.body.content, req.body.blogId)) {
         res.sendStatus(204)
     } else res.sendStatus(404)
@@ -67,8 +58,7 @@ postsRouter.put('/:id',
 
 postsRouter.delete('/:id', authMiddleware,
     async (req, res) => {
-    const id = new ObjectId(req.params.id);
-    if (await postsRepository.deletePost(id)){
+    if (await postsRepository.deletePost(req.params.id)){
         res.sendStatus(204)
     } else {
         res.sendStatus(404)
