@@ -36,9 +36,9 @@ const blogFilter = async (blogId: string, searchNameTerm: string, sortBy: string
             .find(byName)
             .sort(sortBy, sortDirection)
             .skip((pageNumber - 1) * pageSize)
-            .limit(pageSize)
+            .limit(Number(pageSize))
             .toArray() as any[]
-        const totalCount = await blogCollection.countDocuments(filter)
+        const totalCount = await blogCollection.countDocuments(byName)
 
         // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
         return {
@@ -46,7 +46,7 @@ const blogFilter = async (blogId: string, searchNameTerm: string, sortBy: string
             page: pageNumber,
             pageSize: pageSize,
             totalCount: totalCount,
-            items: blogMapper(items)
+            items: items.map(value => blogMapper(value))
         }
     } catch (e) {
         console.log(e)
@@ -54,7 +54,7 @@ const blogFilter = async (blogId: string, searchNameTerm: string, sortBy: string
     }
 }
 export const blogsRepository = {
-    async findBlogs(id: any, searchNameTerm:any, sortBy: any, sortDirection: any, pageNumber: any, pageSize: any){
+    async findBlogs(id: any, searchNameTerm:any, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number){
         return blogFilter(id, searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
     },
     async findBlogsById(id: string): Promise<BlogDbType | null>{

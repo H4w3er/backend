@@ -2,7 +2,7 @@ import {blogsRepository} from "../repositories/blogs-db-repository";
 
 
 export const blogsService = {
-    async findBlogs(id: any, searchNameTerm:any, sortBy: any, sortDirection: any, pageNumber: any, pageSize: any){
+    async findBlogs(id: any, searchNameTerm:any, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number){
         return blogsRepository.findBlogs(id, searchNameTerm, sortBy, sortDirection, pageNumber, pageSize);
     },
     async findBlogsById(id: string){

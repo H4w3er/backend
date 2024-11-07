@@ -15,7 +15,8 @@ const websiteUrlValidation = body('websiteUrl').isLength({min:1, max:100}).withM
 
 blogsRouter.get('/',
     async (req, res) => {
-    const foundBlog = await blogsService.findBlogs(req.query.id, req.query.searchNameTerm, req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
+    // @ts-ignore
+        const foundBlog = await blogsService.findBlogs(req.query.id, req.query.searchNameTerm, req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
     res.send(foundBlog);
 })
 
