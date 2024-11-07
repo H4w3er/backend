@@ -1,6 +1,7 @@
 import {blogCollection, postCollection} from "../db/mongo-db";
 import {PostDbType} from "../db/posts-type-db";
 import {ObjectId} from "mongodb";
+import {query} from "express";
 
 const postMapper = (value: any) => {
     if (value) {
@@ -16,6 +17,7 @@ const postMapper = (value: any) => {
         return mappedPost;
     } else return null;
 }
+
 export const postsRepository = {
     async findPosts(){
         const arrayOfPosts = await postCollection.find({}).toArray()

@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {blogsRepository} from "../repositories/blogs-db-repository";
+import {blogsService} from "../domain/blogs-service";
 import {body, validationResult} from "express-validator";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authMiddleware} from "../middlewares/authMiddleware";
@@ -15,7 +15,7 @@ const websiteUrlValidation = body('websiteUrl').isLength({min:1, max:100}).withM
 
 blogsRouter.get('/',
     async (req, res) => {
-    const foundBlog = await blogsRepository.findBlogs()
+    const foundBlog = await blogsService.findBlogs(req.query.id, req.query.searchNameTerm, req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
     res.send(foundBlog);
 })
 
@@ -26,14 +26,14 @@ blogsRouter.post('/',
     websiteUrlValidation,
     inputValidationMiddleware,
     async (req, res) => {
-    const newBlog = await blogsRepository.createBlog(req.body.name, req.body.description,
+    const newBlog = await blogsService.createBlog(req.body.name, req.body.description,
         req.body.websiteUrl)
     res.status(201).send(newBlog)
 })
 
 blogsRouter.get('/:id',
     async (req, res) => {
-    let blog = await blogsRepository.findBlogsById(req.params.id)
+    let blog = await blogsService.findBlogsById(req.params.id)
     if (blog){
         res.status(200).send(blog)
     } else res.sendStatus(404);
@@ -46,7 +46,7 @@ blogsRouter.put('/:id',
     websiteUrlValidation,
     inputValidationMiddleware,
     async (req, res) => {
-    if(await blogsRepository.updateBlog(req.params.id, req.body.name, req.body.description,
+    if(await blogsService.updateBlog(req.params.id, req.body.name, req.body.description,
         req.body.websiteUrl)) {
         res.sendStatus(204)
     } else res.sendStatus(404)
@@ -54,7 +54,7 @@ blogsRouter.put('/:id',
 
 blogsRouter.delete('/:id', authMiddleware,
     async (req, res) => {
-    if (await blogsRepository.deleteBlog(req.params.id)){
+    if (await blogsService.deleteBlog(req.params.id)){
         res.sendStatus(204)
     } else {
         res.sendStatus(404)

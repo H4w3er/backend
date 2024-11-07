@@ -1,9 +1,9 @@
 import express, {Request, Response} from 'express'
 import {blogsRouter} from "./routers/blogs-router";
 import {postsRouter} from "./routers/posts-router";
-import {blogsRepository} from "./repositories/blogs-db-repository";
 import {SETTINGS} from "./settings";
 import {runDb} from "./db/mongo-db";
+import {blogsService} from "./domain/blogs-service";
 
 const app = express()
 
@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
     res.status(200).json({version: '2.0'});
 })
 app.delete('/testing/all-data', async (req, res) => {
-    if (await blogsRepository.deleteAll()) res.sendStatus(204)
+    if (await blogsService.deleteAll()) res.sendStatus(204)
 })
 
 const startApp = async () =>{

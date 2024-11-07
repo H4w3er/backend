@@ -1,6 +1,7 @@
 import {blogCollection, postCollection} from "../db/mongo-db";
 import {BlogDbType} from "../db/blogs-type-db";
 import {ObjectId} from "mongodb";
+import {query} from "express";
 
 const blogMapper = (value: any) => {
     if (value) {
@@ -15,25 +16,53 @@ const blogMapper = (value: any) => {
     return mappedBlog;
     } else return null;
 }
+
+const blogFilter = async (blogId: string, searchNameTerm: string, sortBy: string, sortDirection: any, pageNumber: number, pageSize: number) => {
+// формирование фильтра (может быть вынесено во вспомогательный метод)
+    const byId = blogId
+        ? {_id: new ObjectId(blogId)}
+        : {}
+    const byName = searchNameTerm
+        ? {name: {$regex: searchNameTerm, $options: "i"}}
+        : {}
+    const filter = {
+        ...byName
+        //...byId
+    }
+
+    try {
+        // собственно запрос в бд (может быть вынесено во вспомогательный метод)
+        const items = await blogCollection
+            .find(byName)
+            .sort(sortBy, sortDirection)
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize)
+            .toArray() as any[]
+        const totalCount = await blogCollection.countDocuments(filter)
+
+        // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
+        return {
+            pagesCount: Math.ceil(totalCount / pageSize),
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount,
+            items: blogMapper(items)
+        }
+    } catch (e) {
+        console.log(e)
+        return {error: 'some error'}
+    }
+}
 export const blogsRepository = {
-    async findBlogs(){
-        let arrayOfBlogs = await blogCollection.find({}).toArray()
-        return arrayOfBlogs.map(value => blogMapper(value))
+    async findBlogs(id: any, searchNameTerm:any, sortBy: any, sortDirection: any, pageNumber: any, pageSize: any){
+        return blogFilter(id, searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
     },
     async findBlogsById(id: string): Promise<BlogDbType | null>{
         const newId = new ObjectId(id);
         const blog = await blogCollection.findOne({_id: newId})
         return blogMapper(blog)
     },
-    async createBlog(name: string, description: string, websiteUrl: string){
-        const newBlog = {
-            //id: (+(Date.now())).toString(),
-            name: name,
-            description: description,
-            websiteUrl: websiteUrl,
-            createdAt: new Date().toISOString(),
-            isMembership: false
-        }
+    async createBlog(newBlog: any){
         const idOfNewBlog = await blogCollection.insertOne(newBlog)
         const blog = await blogCollection.findOne({_id: idOfNewBlog.insertedId})
         return blogMapper(blog);
