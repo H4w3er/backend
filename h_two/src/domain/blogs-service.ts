@@ -30,5 +30,11 @@ export const blogsService = {
     },
     async isBlog(blogId: string): Promise<boolean>{
         return blogsRepository.isBlog(blogId)
+    },
+    async postsForBlog(blogId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
+        return blogsRepository.postsForBlog(blogId, sortBy, sortDirection, pageNumber, pageSize)
+    },
+    async createPostForBlog(id: string, title: string, shortDescription: string, content: string){
+        return blogsRepository.createPostForBlog(id, title, shortDescription, content);
     }
 }
