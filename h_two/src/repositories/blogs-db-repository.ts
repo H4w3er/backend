@@ -1,7 +1,7 @@
 import {blogCollection, postCollection} from "../db/mongo-db";
 import {BlogDbType} from "../db/blogs-type-db";
 import {ObjectId} from "mongodb";
-import {query} from "express";
+import {postsRepository} from "./posts-db-repository";
 
 const blogMapper = (value: any) => {
     if (value) {
@@ -86,5 +86,15 @@ export const blogsRepository = {
         const id = new ObjectId(blogId)
         const result = await blogCollection.countDocuments({_id: id})
         return result === 1;
+    },
+    async postsForBlog(blogId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
+        if(await this.isBlog(blogId)) {
+            return postsRepository.findPostByBlogId(blogId, sortBy, sortDirection, pageNumber, pageSize)
+        } else return null
+    },
+    async createPostForBlog(id: string, title: string, shortDescription: string, content: string){
+        if(await this.isBlog(id)) {
+            return postsRepository.createPost(title, shortDescription, content, id)
+        } else return null
     }
 }
