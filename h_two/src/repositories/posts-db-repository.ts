@@ -50,7 +50,7 @@ const postFilterForBlog = async (blogId: string, sortBy: any, sortDirection: any
             .skip((pageNumber - 1) * pageSize)
             .limit(Number(pageSize))
             .toArray() as any[]
-        const totalCount = await postCollection.countDocuments()
+        const totalCount = await postCollection.countDocuments({blogId: blogId})
 
         // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
         return {
