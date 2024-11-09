@@ -41,7 +41,7 @@ const postFilter = async (sortBy: string, sortDirection: any, pageNumber:number=
         return {error: 'some error'}
     }
 }
-const postFilterForBlog = async (blogId: string, sortBy: any, sortDirection: any, pageNumber:number=1, pageSize:number=10) => {
+const postFilterForBlog = async (blogId: string, sortBy: any, sortDirection: any = 'desc', pageNumber:number=1, pageSize:number=10) => {
     try {
         // собственно запрос в бд (может быть вынесено во вспомогательный метод)
         const items = await postCollection

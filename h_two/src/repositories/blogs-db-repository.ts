@@ -46,6 +46,7 @@ const blogFilter = async (searchNameTerm: string, sortBy: string, sortDirection:
         return {error: 'some error'}
     }
 }
+
 export const blogsRepository = {
     async findBlogs(id: any, searchNameTerm:any, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number){
         return blogFilter(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)

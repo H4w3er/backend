@@ -14,7 +14,7 @@ app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postsRouter)
 
 app.get('/', (req, res) => {
-    res.status(200).json({version: '2.0'});
+    res.status(200).json({version: '2.1'});
 })
 app.delete('/testing/all-data', async (req, res) => {
     if (await blogsService.deleteAll()) res.sendStatus(204)
