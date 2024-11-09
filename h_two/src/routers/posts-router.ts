@@ -1,23 +1,20 @@
 import {Router} from "express";
-import {blogsRepository} from "../repositories/blogs-db-repository";
 import {body} from "express-validator";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authMiddleware} from "../middlewares/authMiddleware";
 import {postsService} from "../domain/posts-service";
-
-const titleValidation = body('title').trim().isLength({min:1, max:30}).withMessage("Title should be more than 1 and less than 30");
-const shortDescriptionValidation = body('shortDescription').isLength({min:1, max:100}).withMessage("shortDescription should be more than 1 and less than 100");
-const contentValidation = body('content').trim().isLength({min:1, max:1000}).withMessage("Content should be more than 1 and less than 1000")
-const blogIdValidation= body('blogId').custom(async value => {
-    const check = await blogsRepository.isBlog(value);
-    if (!check) throw new Error()
-    return true;
-}).withMessage("Blog not found")
+import {
+    blogIdValidation,
+    contentValidation,
+    shortDescriptionValidation,
+    titleValidation
+} from "../middlewares/posts-validation";
 
 export const postsRouter = Router({})
 
 postsRouter.get('/', async(req, res) => {
-    let posts = await postsService.findPosts()
+    // @ts-ignore
+    let posts = await postsService.findPosts(req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
     res.send(posts);
 })
 
