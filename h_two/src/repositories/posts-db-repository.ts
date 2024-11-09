@@ -17,7 +17,7 @@ const postMapper = (value: any) => {
     } else return null;
 }
 
-const postFilter = async (sortBy: string, sortDirection: any, pageNumber: number, pageSize: number) => {
+const postFilter = async (sortBy: string, sortDirection: any, pageNumber:number=1, pageSize:number=10) => {
     try {
         // собственно запрос в бд (может быть вынесено во вспомогательный метод)
         const items = await postCollection
@@ -31,8 +31,8 @@ const postFilter = async (sortBy: string, sortDirection: any, pageNumber: number
         // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
+            page: Number(pageNumber),
+            pageSize: Number(pageSize),
             totalCount: totalCount,
             items: items.map(value => postMapper(value))
         }
@@ -41,7 +41,7 @@ const postFilter = async (sortBy: string, sortDirection: any, pageNumber: number
         return {error: 'some error'}
     }
 }
-const postFilterForBlog = async (blogId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) => {
+const postFilterForBlog = async (blogId: string, sortBy: any, sortDirection: any, pageNumber:number=1, pageSize:number=10) => {
     try {
         // собственно запрос в бд (может быть вынесено во вспомогательный метод)
         const items = await postCollection
@@ -55,8 +55,8 @@ const postFilterForBlog = async (blogId: string, sortBy: any, sortDirection: any
         // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
+            page: Number(pageNumber),
+            pageSize: Number(pageSize),
             totalCount: totalCount,
             items: items.map(value => postMapper(value))
         }

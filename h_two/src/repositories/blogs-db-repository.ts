@@ -17,18 +17,11 @@ const blogMapper = (value: any) => {
     } else return null;
 }
 
-const blogFilter = async (blogId: string, searchNameTerm: string, sortBy: string, sortDirection: any, pageNumber: number, pageSize: number) => {
+const blogFilter = async (searchNameTerm: string, sortBy: string, sortDirection: any, pageNumber:number=1, pageSize:number=10) => {
 // формирование фильтра (может быть вынесено во вспомогательный метод)
-    const byId = blogId
-        ? {_id: new ObjectId(blogId)}
-        : {}
     const byName = searchNameTerm
         ? {name: {$regex: searchNameTerm, $options: "i"}}
         : {}
-    const filter = {
-        ...byName
-        //...byId
-    }
 
     try {
         // собственно запрос в бд (может быть вынесено во вспомогательный метод)
@@ -43,8 +36,8 @@ const blogFilter = async (blogId: string, searchNameTerm: string, sortBy: string
         // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
-            page: pageNumber,
-            pageSize: pageSize,
+            page: Number(pageNumber),
+            pageSize: Number(pageSize),
             totalCount: totalCount,
             items: items.map(value => blogMapper(value))
         }
@@ -55,7 +48,7 @@ const blogFilter = async (blogId: string, searchNameTerm: string, sortBy: string
 }
 export const blogsRepository = {
     async findBlogs(id: any, searchNameTerm:any, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number){
-        return blogFilter(id, searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
+        return blogFilter(searchNameTerm, sortBy, sortDirection, pageNumber, pageSize)
     },
     async findBlogsById(id: string): Promise<BlogDbType | null>{
         const newId = new ObjectId(id);

@@ -72,6 +72,6 @@ blogsRouter.post('/:id/posts',
     async (req, res) => {
     let post = await blogsService.createPostForBlog(req.params.id, req.body.title, req.body.shortDescription, req.body.content)
         if (post){
-            res.status(200).send(post)
+            res.status(201).send(post)
     } else res.sendStatus(404);
 })
