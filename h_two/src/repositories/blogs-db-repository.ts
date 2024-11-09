@@ -17,7 +17,7 @@ const blogMapper = (value: any) => {
     } else return null;
 }
 
-const blogFilter = async (searchNameTerm: string, sortBy: string, sortDirection: any = 'desc', pageNumber:number=1, pageSize:number=10) => {
+const blogFilter = async (searchNameTerm: string, sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber:number=1, pageSize:number=10) => {
 // формирование фильтра (может быть вынесено во вспомогательный метод)
     const byName = searchNameTerm
         ? {name: {$regex: searchNameTerm, $options: "i"}}
