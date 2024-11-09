@@ -1,9 +1,10 @@
 import {postsRepository} from "../repositories/posts-db-repository";
+import {PostDbType} from "../db/posts-type-db";
 
 
 export const postsService = {
-    async findPosts() {
-        return postsRepository.findPosts()
+    async findPosts(sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
+        return postsRepository.findPosts(sortBy, sortDirection, pageNumber, pageSize)
     },
     async findPostById(id: string) {
         return postsRepository.findPostById(id)
