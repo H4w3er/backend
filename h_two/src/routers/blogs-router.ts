@@ -4,13 +4,14 @@ import {inputValidationMiddleware} from "../middlewares/input-validation-middlew
 import {authMiddleware} from "../middlewares/authMiddleware";
 import {nameValidation, descriptionValidation, websiteUrlValidation} from "../middlewares/blogs-validation"
 import {contentValidation, shortDescriptionValidation, titleValidation} from "../middlewares/posts-validation";
+import {blogQueryRepository} from "../repositories/blogs-db-query-repository";
 
 export const blogsRouter = Router({})
 
 blogsRouter.get('/',
     async (req, res) => {
     // @ts-ignore
-        const foundBlog = await blogsService.findBlogs(req.query.id, req.query.searchNameTerm, req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
+        const foundBlog = await blogQueryRepository.findBlogs(req.query.id, req.query.searchNameTerm, req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
     res.send(foundBlog);
 })
 
@@ -23,13 +24,13 @@ blogsRouter.post('/',
     async (req, res) => {
     const newBlog = await blogsService.createBlog(req.body.name, req.body.description,
         req.body.websiteUrl)
-    res.status(201).send(newBlog)
+    res.status(201).send(await blogQueryRepository.findBlogsById(newBlog.toString()))
 })
 
 blogsRouter.get('/:id',
     async (req, res) => {
-    let blog = await blogsService.findBlogsById(req.params.id)
-    if (blog){
+    let blog = await blogQueryRepository.findBlogsById(req.params.id)
+        if (blog){
         res.status(200).send(blog)
     } else res.sendStatus(404);
 })
@@ -75,3 +76,7 @@ blogsRouter.post('/:id/posts',
             res.status(201).send(post)
     } else res.sendStatus(404);
 })
+
+//маппер перенести в qery repo
+//добавить qery repo для get запросов, он только для present слоя
+//крч все get через quey делать, если в post нужно вернуть созданный обЪект то P->B->D, D возвращает id, потом P делает get запрос
