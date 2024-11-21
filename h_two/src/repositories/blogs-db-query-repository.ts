@@ -17,7 +17,6 @@ const blogFilter = async (searchNameTerm: string, sortBy: string = "createdAt", 
     const byName = searchNameTerm
         ? {name: {$regex: searchNameTerm, $options: "i"}}
         : {}
-
     try {
         // собственно запрос в бд (может быть вынесено во вспомогательный метод)
         const items = await blogCollection
@@ -50,5 +49,13 @@ export const blogQueryRepository = {
         const newId = new ObjectId(id);
         const blog = await blogCollection.findOne({_id: newId})
         return blogMapper(blog)
+    },
+    async getBlogName(id: string):Promise<string>{
+        const newId = new ObjectId(id);
+        const blog = await blogCollection.findOne({_id: newId})
+        // @ts-ignore
+        console.log(blog.name)
+        // @ts-ignore
+        return blog.name;
     }
 }
