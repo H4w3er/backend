@@ -1,4 +1,7 @@
 import {blogsRepository} from "../repositories/blogs-db-repository";
+import {postsRepository} from "../repositories/posts-db-repository";
+import {postsService} from "./posts-service";
+import {postQueryRepository} from "../repositories/posts-db-query-repository";
 
 
 export const blogsService = {
@@ -24,10 +27,8 @@ export const blogsService = {
     async isBlog(blogId: string): Promise<boolean>{
         return blogsRepository.isBlog(blogId)
     },
-    async postsForBlog(blogId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
-        return blogsRepository.postsForBlog(blogId, sortBy, sortDirection, pageNumber, pageSize)
-    },
     async createPostForBlog(id: string, title: string, shortDescription: string, content: string){
-        return blogsRepository.createPostForBlog(id, title, shortDescription, content);
+        const newPostId = await postsService.createPost(title, shortDescription, content, id);
+        return postQueryRepository.findPostById(newPostId.toString())
     }
 }

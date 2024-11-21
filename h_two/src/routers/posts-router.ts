@@ -1,5 +1,4 @@
 import {Router} from "express";
-import {body} from "express-validator";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authMiddleware} from "../middlewares/authMiddleware";
 import {postsService} from "../domain/posts-service";
@@ -9,12 +8,13 @@ import {
     shortDescriptionValidation,
     titleValidation
 } from "../middlewares/posts-validation";
+import {postQueryRepository} from "../repositories/posts-db-query-repository";
 
 export const postsRouter = Router({})
 
 postsRouter.get('/', async(req, res) => {
     // @ts-ignore
-    let posts = await postsService.findPosts(req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
+    let posts = await postQueryRepository.findPosts(req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
     res.send(posts);
 })
 
@@ -26,13 +26,14 @@ postsRouter.post('/',
     blogIdValidation,
     inputValidationMiddleware,
     async (req, res) => {
-    const newPost = await postsService.createPost(req.body.title, req.body.shortDescription,
+    const newPostId = await postsService.createPost(req.body.title, req.body.shortDescription,
         req.body.content, req.body.blogId)
+        const newPost = await postQueryRepository.findPostById(newPostId.toString())
         res.status(201).send(newPost)
     })
 
 postsRouter.get('/:id', async (req, res) => {
-    let post = await postsService.findPostById(req.params.id)
+    let post = await postQueryRepository.findPostById(req.params.id)
     if (post){
         res.status(200).send(post)
     } else res.sendStatus(404);
