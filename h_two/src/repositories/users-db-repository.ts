@@ -3,21 +3,24 @@ import {ObjectId} from "mongodb";
 
 export const usersRepository = {
     async createUser(newUser: any){
-        const newUserId = await userCollection.insertOne(newUser)
-        const newUserInDb = await userCollection.findOne({_id: newUserId.insertedId})
-        return userMapper(newUserInDb);
+        await userCollection.insertOne(newUser)
+        return userMapper(newUser);
     },
     async deleteUser(id: string){
         const objId = new ObjectId(id);
         const result = await userCollection.deleteOne({_id: objId})
         return result.deletedCount === 1;
+    },
+    async findByLoginOrEmail(loginOrEmail: string){
+        const user = await userCollection.findOne({$or: [{email: loginOrEmail}, {userName: loginOrEmail}]})
+        return user
     }
 }
 
 const userMapper = (value: any)=> {
     return {
         id: value._id,
-        login: value.login,
+        login: value.userName,
         email: value.email,
         createdAt: value.createdAt,
     }
