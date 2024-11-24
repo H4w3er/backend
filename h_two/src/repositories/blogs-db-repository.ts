@@ -1,4 +1,4 @@
-import {blogCollection, postCollection} from "../db/mongo-db";import {ObjectId} from "mongodb";
+import {blogCollection, postCollection, userCollection} from "../db/mongo-db";import {ObjectId} from "mongodb";
 
 
 export const blogsRepository = {
@@ -19,6 +19,7 @@ export const blogsRepository = {
     async deleteAll(): Promise<boolean>{
         await blogCollection.deleteMany()
         await postCollection.deleteMany()
+        await userCollection.deleteMany()
         return true;
     },
     async isBlog(blogId: string): Promise<boolean>{

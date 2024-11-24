@@ -4,7 +4,7 @@ const userMapper = (value: any) => {
     if (value) {
         return {
             id: value._id,
-            login: value.login,
+            login: value.userName,
             email: value.email,
             createdAt: value.createdAt
         };
@@ -12,14 +12,14 @@ const userMapper = (value: any) => {
 }
 const userFilter = async (sortBy: string = 'createdAt', sortDirection: any = 'desc', pageNumber: number = 1, pageSize: number = 10, searchLoginTerm: string, searchEmailTerm: string) => {
     const byLogin = searchLoginTerm
-        ? {name: {$regex: searchLoginTerm, $options: "i"}}
+        ? {userName: {$regex: searchLoginTerm, $options: "i"}}
         : {}
     const byEmail = searchEmailTerm
-        ? {name: {$regex: searchEmailTerm, $options: "i"}}
+        ? {email: {$regex: searchEmailTerm, $options: "i"}}
         : {}
     const filter = {
-        ...byLogin,
-        ...byEmail
+        ...byEmail,
+        ...byLogin
     }
     try {
         // собственно запрос в бд (может быть вынесено во вспомогательный метод)
