@@ -29,7 +29,7 @@ const userFilter = async (sortBy: string = 'createdAt', sortDirection: any = 'de
             .skip((pageNumber - 1) * pageSize)
             .limit(Number(pageSize))
             .toArray() as any[]
-        const totalCount = await userCollection.countDocuments(byLogin)
+        const totalCount = await userCollection.countDocuments(filter)
 
         // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
         return {
