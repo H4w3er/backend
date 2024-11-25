@@ -5,6 +5,7 @@ import {SETTINGS} from "./settings";
 import {runDb} from "./db/mongo-db";
 import {blogsService} from "./domain/blogs-service";
 import {usersRouter} from "./routers/users-router";
+import {authRouter} from "./routers/auth-router";
 
 const app = express()
 
@@ -14,6 +15,7 @@ app.use(jsonBodyMiddleware)
 app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postsRouter)
 app.use(SETTINGS.PATH.USERS, usersRouter)
+app.use(SETTINGS.PATH.AUTH, authRouter)
 
 app.get('/', (req, res) => {
     res.status(200).json({version: '2.2'});

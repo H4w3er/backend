@@ -7,26 +7,10 @@ import bcrypt from "bcrypt";
 export const usersService = {
     async createUser(login: string, password: string, email: string) {
         if (await usersRepository.findByLoginOrEmail(login)){
-                return 1
-            // return {
-            //     "errorsMessages":[
-            //         {
-            //             "message": "the login is not unique",
-            //             "field": "login"
-            //         }
-            //     ]
-            // }
+            return 1
         }
         if (await usersRepository.findByLoginOrEmail(email)){
-             return 2
-            //{
-            //     "errorsMessages":[
-            //         {
-            //             "message": "the email address is not unique",
-            //             "field": "email"
-            //         }
-            //     ]
-            // }
+            return 2
         }
         const bcrypt = require('bcrypt')
         const passwordSalt = await bcrypt.genSalt(10)
@@ -48,6 +32,7 @@ export const usersService = {
          const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
          if (!user) return false
          const passwordHash = await this.createHash(password, user.passwordSalt)
+        console.log(passwordHash)
          if (user.passwordHash !== passwordHash){
              return false
          }
