@@ -18,8 +18,7 @@ const userFilter = async (sortBy: string = 'createdAt', sortDirection: any = 'de
         ? {email: {$regex: searchEmailTerm, $options: "i"}}
         : {}
     const filter = {
-        ...byEmail,
-        ...byLogin
+        $or : [byLogin, byEmail]
     }
     try {
         // собственно запрос в бд (может быть вынесено во вспомогательный метод)
