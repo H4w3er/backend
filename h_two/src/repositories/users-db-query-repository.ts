@@ -20,6 +20,7 @@ const userFilter = async (sortBy: string = 'createdAt', sortDirection: any = 'de
     const filter = {
         $or : [byLogin, byEmail]
     }
+    if (sortBy === 'login') sortBy = 'userName'
     try {
         // собственно запрос в бд (может быть вынесено во вспомогательный метод)
         const items = await userCollection
