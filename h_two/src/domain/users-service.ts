@@ -1,7 +1,7 @@
 import {usersRepository} from "../repositories/users-db-repository";
 import {UserDbType} from "../db/user-type-db";
 import {ObjectId} from "mongodb";
-import bcrypt from "bcrypt";
+
 
 
 export const usersService = {
@@ -30,17 +30,19 @@ export const usersService = {
     },
     async checkCredentials(loginOrEmail: string, password: string){
          const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
-         if (!user) return false
+        if (!user) return false
          const passwordHash = await this.createHash(password, user.passwordSalt)
-        console.log(passwordHash)
          if (user.passwordHash !== passwordHash){
              return false
          }
-         return true;
+         return user;
     },
     async createHash(password: string, salt: string){
         const bcrypt = require('bcrypt')
         const hash = await bcrypt.hash(password, salt)
         return hash;
+    },
+    async findUserById(id: string){
+        return usersRepository.findUserById(id)
     }
 }
