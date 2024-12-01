@@ -1,22 +1,24 @@
 import {postsRepository} from "../repositories/posts-db-repository";
-import {PostDbType} from "../db/posts-type-db";
+import {blogQueryRepository} from "../repositories/blogs-db-query-repository";
 
 
 export const postsService = {
-    async findPosts(sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
-        return postsRepository.findPosts(sortBy, sortDirection, pageNumber, pageSize)
-    },
-    async findPostById(id: string) {
-        return postsRepository.findPostById(id)
-    },
-    // @ts-ignore
     async createPost(title: string, shortDescription: string, content: string, blogId: string) {
-        return postsRepository.createPost(title, shortDescription, content, blogId)
+        const newPost ={
+            title: title,
+            shortDescription: shortDescription,
+            content: content,
+            blogId: blogId,
+            blogName: (await blogQueryRepository.getBlogName(blogId)),
+            createdAt: new Date().toISOString()
+        }
+        return postsRepository.createPost(newPost)
     },
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
         return postsRepository.updatePost(id, title, shortDescription, content, blogId)
     },
     async deletePost(id: string): Promise<boolean> {
         return postsRepository.deletePost(id)
-    }
+    },
+
 }
