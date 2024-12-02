@@ -9,7 +9,7 @@ authRouter.post('/login', async (req,res) =>{
     const checkUser = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (checkUser){
         const token = await jwtService.createJWT(checkUser)
-        res.status(201).send({accessToken: token})
+        res.status(200).send({accessToken: token})
     } else {
         res.sendStatus(401)
     }
