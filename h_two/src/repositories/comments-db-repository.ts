@@ -55,7 +55,11 @@ export const commentsRepository = {
         return commentFilterForPost(postId, sortBy, sortDirection, pageNumber, pageSize)
     },
     async updateCommentById(commentId: string, newContent: string){
-        const newComment = await commentsCollection.updateOne({_id: new ObjectId(commentId)}, {$set: {content: newContent}})
-        return newComment
+        await commentsCollection.updateOne({_id: new ObjectId(commentId)}, {$set: {content: newContent}})
+        return true
+    },
+    async deleteCommentById(commentId:string){
+        await commentsCollection.deleteOne({_id:new ObjectId(commentId)})
+        return true
     }
 }
