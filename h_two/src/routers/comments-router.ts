@@ -19,8 +19,19 @@ commentsRouter.put('/:commentId',
     inputValidationMiddleware,
     async (req,res) => {
         const newComment = await commentsService.updateCommentById(req.params.commentId, req.body.content, req.user!._id)
-        if (newComment===1) res.sendStatus(403)
         if (!newComment) res.sendStatus(404)
+        if (newComment===1) res.sendStatus(403)
         res.sendStatus(204)
 })
+
+commentsRouter.delete('/:commentId',
+    authBearerMiddleware,
+    contentValidation,
+    inputValidationMiddleware,
+    async (req,res) => {
+        const newComment = await commentsService.deleteCommentById(req.params.commentId, req.user!._id)
+        if (!newComment) res.sendStatus(404)
+        if (newComment===1) res.sendStatus(403)
+        res.sendStatus(204)
+    })
 
