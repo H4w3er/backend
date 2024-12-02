@@ -26,5 +26,12 @@ export const commentsService = {
         if (userId.toString() !== oldComment.commentatorInfo.userId) return 1;
         const newComment = await commentsRepository.updateCommentById(commentId, newContent)
         return newComment;
-    }
+    },
+    async deleteCommentById(commentId: string, userId: ObjectId){
+        const oldComment = await commentsRepository.getCommentById(commentId)
+        if (!oldComment) return null;
+        if (userId.toString() !== oldComment.commentatorInfo.userId) return 1;
+        const newComment = await commentsRepository.deleteCommentById(commentId)
+        return newComment;
+    },
 }
