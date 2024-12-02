@@ -1,12 +1,12 @@
 import {Router} from "express";
 import {authBearerMiddleware} from "../middlewares/authBearerMiddleware";
 import {commentsService} from "../domain/comments-service";
-import {contentValidation} from "../middlewares/posts-validation";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {contentCommentValidation} from "../middlewares/comments-validation";
 
 export const commentsRouter = Router()
 
-commentsRouter.get('/:id', authBearerMiddleware,
+commentsRouter.get('/:id',
     async (req, res) => {
         const comment = await commentsService.getCommentById(req.params.id)
         if (!comment) {
@@ -16,7 +16,7 @@ commentsRouter.get('/:id', authBearerMiddleware,
 
 commentsRouter.put('/:commentId',
     authBearerMiddleware,
-    contentValidation,
+    contentCommentValidation,
     inputValidationMiddleware,
     async (req,res) => {
         const newComment = await commentsService.updateCommentById(req.params.commentId, req.body.content, req.user!._id)
@@ -25,10 +25,10 @@ commentsRouter.put('/:commentId',
         else res.sendStatus(204)
 })
 
-commentsRouter.delete('/:commentId',
+commentsRouter.delete('/:id',
     authBearerMiddleware,
     async (req,res) => {
-        const newComment = await commentsService.deleteCommentById(req.params.commentId, req.user!._id)
+        const newComment = await commentsService.deleteCommentById(req.params.id, req.user!._id)
         if (!newComment) res.sendStatus(404)
         else if (newComment===1) res.sendStatus(403)
         else res.sendStatus(204)
