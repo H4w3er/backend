@@ -88,6 +88,10 @@ postsRouter.post('/:postId/comments',
 
 postsRouter.get('/:postId/comments',
     async (req, res) => {
+        let post = await postQueryRepository.findPostById(req.params.postId)
+        if (!post){
+            res.sendStatus(404);
+        }
         const comments = await commentsService.getCommentForPost(req.params.postId, req.query.sortBy, req.query.sortDirection, req.query.pageNumer, req.query.pageSize)
         if (!comments) res.sendStatus(404)
         res.status(200).send(comments)
