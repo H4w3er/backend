@@ -54,8 +54,6 @@ export const blogQueryRepository = {
         const newId = new ObjectId(id);
         const blog = await blogCollection.findOne({_id: newId})
         // @ts-ignore
-        console.log(blog.name)
-        // @ts-ignore
         return blog.name;
     }
 }

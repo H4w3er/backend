@@ -1,21 +1,5 @@
-import {blogCollection, postCollection} from "../db/mongo-db";
-import {PostDbType} from "../db/posts-type-db";
+import {postCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
-
-const postMapper = (value: any) => {
-    if (value) {
-        const mappedPost = {
-            id: value._id,
-            title: value.title,
-            shortDescription: value.shortDescription,
-            content: value.content,
-            blogId: value.blogId,
-            blogName: value.blogName,
-            createdAt: value.createdAt
-        }
-        return mappedPost;
-    } else return null;
-}
 
 export const postsRepository = {
     async createPost(post: any){

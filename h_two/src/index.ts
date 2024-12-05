@@ -8,7 +8,7 @@ import {usersRouter} from "./routers/users-router";
 import {authRouter} from "./routers/auth-router";
 import {commentsRouter} from "./routers/comments-router";
 
-const app = express()
+export const app = express()
 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware)

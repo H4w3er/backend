@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "watch": "tsc -w",
-    "dev": "nodemon --inspect dist/index.js"
+    "dev": "nodemon --inspect dist/index.js",
+    "test": "jest"
   },
   "private": true,
   "author": "H4w3er <mr.gavrik378@list.ru>",
