@@ -33,7 +33,7 @@ postsRouter.post('/',
         req.body.content, req.body.blogId)
         const newPost = await postQueryRepository.findPostById(newPostId.toString())
         console.log(newPost)
-        res.status(201).send(newPost)
+        res.status(201).send(newPost);
     })
 
 postsRouter.get('/:id', async (req, res) => {
