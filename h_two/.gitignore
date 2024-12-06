@@ -8,3 +8,4 @@
 /yarn.lock
 /dist
 .env
+jest.config.js
