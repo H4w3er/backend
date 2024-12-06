@@ -75,5 +75,10 @@ export const postQueryRepository = {
     },
     async postsForBlog(blogId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number){
         return postFilterForBlog(blogId, sortBy, sortDirection, pageNumber, pageSize)
-    }
+    },
+    async findPostByIdForComments(id: string): Promise<number | null>{
+        const objId = new ObjectId(id);
+        const post = await postCollection.countDocuments({_id: objId})
+        return post
+    },
 }
