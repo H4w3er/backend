@@ -20,7 +20,7 @@ app.use(SETTINGS.PATH.AUTH, authRouter)
 app.use(SETTINGS.PATH.COMMENTS, commentsRouter)
 
 app.get('/', (req, res) => {
-    res.status(200).json({version: '2.2'});
+    res.status(200).json({version: '2.5'});
 })
 app.delete('/testing/all-data', async (req, res) => {
     if (await blogsService.deleteAll()) res.sendStatus(204)
