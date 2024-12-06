@@ -32,6 +32,7 @@ postsRouter.post('/',
     const newPostId = await postsService.createPost(req.body.title, req.body.shortDescription,
         req.body.content, req.body.blogId)
         const newPost = await postQueryRepository.findPostById(newPostId.toString())
+        console.log(newPost)
         res.status(201).send(newPost)
     })
 
@@ -70,8 +71,8 @@ postsRouter.post('/:postId/comments',
     contentCommentValidation,
     inputValidationMiddleware,
     async (req,res) => {
-        let post = await postQueryRepository.findPostById(req.params.postId)
-        if (!post){
+        let post = await postQueryRepository.findPostByIdForComments(req.params.postId)
+        if (post===0){
             res.sendStatus(404);
         } else {
             const comment = await commentsService.createComment(req.params.postId, req.body.content, req.user!._id, req.user!.userName)
