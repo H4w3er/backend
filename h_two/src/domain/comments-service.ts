@@ -13,7 +13,7 @@ export const commentsService = {
             createdAt: new Date().toISOString(),
             postId: new ObjectId(postId)
         }
-        return await commentsRepository.createComment(newComment)
+        return commentsRepository.createComment(newComment)
     },
     async getCommentById(commentId: string){
         return commentsRepository.getCommentById(commentId)
