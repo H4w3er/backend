@@ -11,7 +11,7 @@ import {
 import {postQueryRepository} from "../repositories/posts-db-query-repository";
 import {commentsService} from "../domain/comments-service";
 import {authBearerMiddleware} from "../middlewares/authBearerMiddleware";
-import {contentCommentValidation} from "../middlewares/comments-validation";
+import {contentCommentValidation, postIdCommentValidation} from "../middlewares/comments-validation";
 
 export const postsRouter = Router({})
 
@@ -69,15 +69,20 @@ postsRouter.delete('/:id', authMiddleware,
 postsRouter.post('/:postId/comments',
     authBearerMiddleware,
     contentCommentValidation,
+    //postIdCommentValidation,
     inputValidationMiddleware,
     async (req,res) => {
-        let post = await postQueryRepository.findPostByIdForComments(req.params.postId)
-        if (post===0){
+    if (req.params.postId.length!==24) {
+        res.sendStatus(404)
+    } else {
+        let post = await postQueryRepository.findPostById(req.params.postId)
+        if (!post) {
             res.sendStatus(404);
         } else {
             const comment = await commentsService.createComment(req.params.postId, req.body.content, req.user!._id, req.user!.userName)
             res.status(201).send(comment)
         }
+    }
     })
 
 postsRouter.get('/:postId/comments',
