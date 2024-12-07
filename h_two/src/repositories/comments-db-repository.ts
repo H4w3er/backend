@@ -44,7 +44,8 @@ const commentFilterForPost = async (postId: string, sortBy: string = "createdAt"
 export const commentsRepository = {
     async createComment(comment: any){
         const idOfComment = await commentsCollection.insertOne(comment);
-        return commentMapper(await commentsCollection.findOne({_id:idOfComment.insertedId}))
+        const newCommentDbType = await commentsCollection.findOne({_id: idOfComment.insertedId})
+        return commentMapper(newCommentDbType)
     },
     async getCommentById(commentId: string){
         const objId = new ObjectId(commentId)
