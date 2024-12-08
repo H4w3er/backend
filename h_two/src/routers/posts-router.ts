@@ -12,7 +12,6 @@ import {postQueryRepository} from "../repositories/posts-db-query-repository";
 import {commentsService} from "../domain/comments-service";
 import {authBearerMiddleware} from "../middlewares/authBearerMiddleware";
 import {contentCommentValidation} from "../middlewares/comments-validation";
-import {ObjectId} from "mongodb";
 
 export const postsRouter = Router({})
 
@@ -73,16 +72,12 @@ postsRouter.post('/:postId/comments',
     //postIdCommentValidation,
     inputValidationMiddleware,
     async (req,res) => {
-        try{
-            let post = await postQueryRepository.findPostById(req.params.postId)
-            if (!post) {
-                res.sendStatus(404);
-            } else {
-                const comment = await commentsService.createComment(req.params.postId, req.body.content, req.user!._id, req.user!.userName)
-                res.status(201).send(comment)
-            }
-        } catch (e) {
-            res.sendStatus(404)
+    let post = await postQueryRepository.findPostById(req.params.postId)
+        if (!post) {
+            res.sendStatus(404);
+        } else {
+            const comment = await commentsService.createComment(req.params.postId, req.body.content, req.user!._id, req.user!.userName)
+            res.status(201).send(comment)
         }
     })
 
