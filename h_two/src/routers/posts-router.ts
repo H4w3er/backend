@@ -86,8 +86,13 @@ postsRouter.get('/:postId/comments',
         let post = await postQueryRepository.findPostById(req.params.postId)
         if (!post){
             res.sendStatus(404);
+        } else {
+            const comments = await commentsService.getCommentForPost(req.params.postId, req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
+            if (!comments) {
+                res.sendStatus(404)
+            }
+            else {
+                res.status(200).send(comments)
+            }
         }
-        const comments = await commentsService.getCommentForPost(req.params.postId, req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
-        if (!comments) res.sendStatus(404)
-        res.status(200).send(comments)
 })
