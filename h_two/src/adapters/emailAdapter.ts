@@ -16,13 +16,13 @@ export const emailAdapter = {
         const info = await transporter.sendMail({
             from: '"Artem"<mr.gavrik378@list.ru>',
             to: email,
-            subject: 'account creation',
+            subject: 'Account creation',
             text: `https://somesite.com/confirm-email?code=${code}`
         });
     },
     async checkCode(code: string){
-        const conformation = await usersRepository.findUserByCode(code)
-        if (conformation) {
+        const user = await usersRepository.findUserByCode(code)
+        if (!(user?.emailConfirm.isConfirmed)) {
             await usersRepository.updateUserByCode(code)
             return true
         } else return false
