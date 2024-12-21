@@ -51,7 +51,7 @@ authRouter.post('/registration', loginValidation, emailValidation, passwordValid
                     "field": "email"
                 }]})
     } else{
-        res.sendStatus(204)
+        res.status(204).send("Input data is accepted. Email with confirmation code will be send to passed email address.")
     }
 })
 authRouter.post('/registration-confirmation', async (req, res) =>{
