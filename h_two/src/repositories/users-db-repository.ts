@@ -1,5 +1,6 @@
 import {userCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
+import {UserDbTypeCommon} from "../db/user-type-db";
 
 export const usersRepository = {
     async createUser(newUser: any){
@@ -19,6 +20,14 @@ export const usersRepository = {
         const newId = new ObjectId(id)
         const user = await userCollection.findOne({_id: newId})
         return user
+    },
+    async findUserByCode(code: string){
+        const user = await userCollection.findOne({'emailConfirm.confCode': code})
+        return user
+    },
+    async updateUserByCode(code: string){
+        const user = await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.isConfirmed': true}})
+        return true
     }
 }
 
