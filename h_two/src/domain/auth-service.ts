@@ -40,7 +40,8 @@ export const authService = {
             return null
         }
         if (user.emailConfirm.isConfirmed) return null
-        await emailAdapter.sendEmail(email, user.emailConfirm.confCode)
+        const newCode = await usersRepository.updateUserCodeByCode(user.emailConfirm.confCode)
+        await emailAdapter.sendEmail(email, newCode)
         return true
     }
 }
