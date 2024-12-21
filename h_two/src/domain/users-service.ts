@@ -1,7 +1,7 @@
 import {usersRepository} from "../repositories/users-db-repository";
 import {UserDbType} from "../db/user-type-db";
 import {ObjectId} from "mongodb";
-
+import bcrypt from 'bcrypt'
 
 
 export const usersService = {
@@ -12,7 +12,6 @@ export const usersService = {
         if (await usersRepository.findByLoginOrEmail(email)){
             return 2
         }
-        const bcrypt = require('bcrypt')
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this.createHash(password, passwordSalt)
         const newUser:UserDbType = {
