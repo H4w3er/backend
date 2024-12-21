@@ -22,7 +22,8 @@ export const emailAdapter = {
     },
     async checkCode(code: string){
         const user = await usersRepository.findUserByCode(code)
-        if (!(user?.emailConfirm.isConfirmed)) {
+        console.log(user)
+        if (user?.emailConfirm.isConfirmed === false) {
             await usersRepository.updateUserByCode(code)
             return true
         } else return false
