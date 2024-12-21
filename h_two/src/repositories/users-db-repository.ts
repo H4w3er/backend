@@ -1,6 +1,7 @@
 import {userCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {UserDbTypeCommon} from "../db/user-type-db";
+import {v4 as uuidv4} from "uuid";
 
 export const usersRepository = {
     async createUser(newUser: any){
@@ -28,6 +29,11 @@ export const usersRepository = {
     async updateUserByCode(code: string){
         const user = await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.isConfirmed': true}})
         return true
+    },
+    async updateUserCodeByCode(code: string){
+        const newCode = uuidv4()
+        const user = await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.confCode': newCode}})
+        return newCode
     }
 }
 
