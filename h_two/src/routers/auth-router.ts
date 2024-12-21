@@ -2,6 +2,8 @@ import {Router} from "express";
 import {usersService} from "../domain/users-service";
 import {jwtService} from "../application/jwt-service";
 import {authBearerMiddleware} from "../middlewares/authBearerMiddleware";
+import nodemailer from 'nodemailer'
+import {emailAdapter} from "../adapters/emailAdapter";
 
 export const authRouter = Router({})
 
@@ -21,4 +23,8 @@ authRouter.get('/me', authBearerMiddleware, async (req, res) =>{
         "userId": req.user!._id,
     }
     res.status(200).send(thisUser)
+})
+authRouter.post('/registration', async (req, res) =>{
+    await emailAdapter.sendEmail(req.body.email)
+    res.sendStatus(200)
 })
