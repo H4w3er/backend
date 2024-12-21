@@ -89,7 +89,3 @@ blogsRouter.post('/:id/posts',
         res.sendStatus(404)
     }
 })
-
-//маппер перенести в query repo
-//добавить query repo для get запросов, он только для present слоя
-//крч все get через query делать, если в post нужно вернуть созданный обЪект то P->B->D, D возвращает id, потом P делает get запрос
