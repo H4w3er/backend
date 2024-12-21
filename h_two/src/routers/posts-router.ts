@@ -69,7 +69,6 @@ postsRouter.delete('/:id', authMiddleware,
 postsRouter.post('/:postId/comments',
     authBearerMiddleware,
     contentCommentValidation,
-    //postIdCommentValidation,
     inputValidationMiddleware,
     async (req,res) => {
     let post = await postQueryRepository.findPostById(req.params.postId)
