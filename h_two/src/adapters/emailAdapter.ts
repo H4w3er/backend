@@ -17,7 +17,7 @@ export const emailAdapter = {
             from: '"Artem"<mr.gavrik378@list.ru>',
             to: email,
             subject: 'account creation',
-            html: `https://somesite.com/confirm-email?code=${code}`
+            text: `https://somesite.com/confirm-email?code=${code}`
         });
     },
     async checkCode(code: string){
