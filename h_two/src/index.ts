@@ -25,7 +25,6 @@ app.get('/', (req, res) => {
 app.delete('/testing/all-data', async (req, res) => {
     if (await blogsService.deleteAll()) res.sendStatus(204)
 })
-
 const startApp = async () =>{
     await runDb()
     app.listen (SETTINGS.PORT, ()=>{
