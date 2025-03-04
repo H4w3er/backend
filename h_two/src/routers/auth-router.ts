@@ -6,6 +6,8 @@ import {emailAdapter} from "../adapters/emailAdapter";
 import {emailValidation, loginValidation, passwordValidation} from "../middlewares/auth-validation";
 import {authService} from "../domain/auth-service";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
+import {cookie} from "express-validator";
+import {SETTINGS} from "../settings";
 
 export const authRouter = Router({})
 
@@ -13,6 +15,9 @@ authRouter.post('/login', async (req,res) =>{
     const checkUser = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (checkUser){
         const token = await jwtService.createJWT(checkUser)
+        const refreshToken = await jwtService.createRefreshToken(checkUser)
+        //document.cookie = `username = ${refreshToken}`
+        res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.status(200).send({accessToken: token})
     } else {
         res.sendStatus(401)
@@ -62,4 +67,8 @@ authRouter.post('/registration-confirmation', async (req, res) =>{
                 "message": "wrong code",
                 "field": "code"
             }]})
+})
+
+authRouter.post('/refresh_token', async (req, res) =>{
+
 })
