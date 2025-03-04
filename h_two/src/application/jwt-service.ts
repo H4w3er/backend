@@ -4,7 +4,7 @@ import {SETTINGS} from "../settings";
 export const jwtService = {
     async createJWT(user: UserDbType){
         const jwt = require('jsonwebtoken')
-        const token = jwt.sign({userId: user._id}, SETTINGS.JWT_SECRET,{expiresIn: '5 days'})
+        const token = jwt.sign({userId: user._id}, SETTINGS.JWT_SECRET,{expiresIn: '10 seconds'})
         return token
     },
     async getIdByToken(token: string | undefined){
@@ -15,5 +15,10 @@ export const jwtService = {
         } catch (error){
             return null
         }
+    },
+    async createRefreshToken(user: UserDbType){
+        const jwt = require('jsonwebtoken')
+        const token = jwt.sign({userId: user._id}, SETTINGS.JWT_SECRET,{expiresIn: '20 seconds'})
+        return token
     }
 }
