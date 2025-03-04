@@ -7,11 +7,13 @@ import {blogsService} from "./domain/blogs-service";
 import {usersRouter} from "./routers/users-router";
 import {authRouter} from "./routers/auth-router";
 import {commentsRouter} from "./routers/comments-router";
+import cookieParser from "cookie-parser";
 
 const app = express()
 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware)
+app.use(cookieParser())
 
 app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postsRouter)
