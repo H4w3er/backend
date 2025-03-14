@@ -15,9 +15,10 @@ export type UserDbTypeCommon = {
     "email": string,
     "passwordHash": string,
     "passwordSalt": string,
-    "createdAt": string
+    "createdAt": string,
     "emailConfirm":{
         "confCode": string,
         "isConfirmed": boolean
     }
+    "refreshTokenBlackList": Array<string>
 }

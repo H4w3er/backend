@@ -8,15 +8,15 @@ import {authService} from "../domain/auth-service";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {cookie} from "express-validator";
 import {SETTINGS} from "../settings";
+import {authRefreshMiddleware} from "../middlewares/authRefreshMiddleware";
 
 export const authRouter = Router({})
 
 authRouter.post('/login', async (req,res) =>{
     const checkUser = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (checkUser){
-        const token = await jwtService.createJWT(checkUser)
-        const refreshToken = await jwtService.createRefreshToken(checkUser)
-        //document.cookie = `username = ${refreshToken}`
+        const token = await jwtService.createJWT(checkUser._id)
+        const refreshToken = await jwtService.createRefreshToken(checkUser._id)
         res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.status(200).send({accessToken: token})
     } else {
@@ -69,6 +69,16 @@ authRouter.post('/registration-confirmation', async (req, res) =>{
             }]})
 })
 
-authRouter.post('/refresh_token', async (req, res) =>{
+authRouter.post('/refresh_token', authRefreshMiddleware, async (req, res) =>{
+    const refreshToken = req.cookies.refreshToken;
+    const userId = await jwtService.getIdByToken(refreshToken)
+    if (!userId) {
+        res.sendStatus(401)
+    } else {
+        const token = await jwtService.createJWT(userId)
+        const refreshToken = await jwtService.createRefreshToken(userId)
 
+        res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
+        res.status(200).send({accessToken: token})
+    }
 })

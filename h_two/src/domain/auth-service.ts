@@ -25,7 +25,8 @@ export const authService = {
             emailConfirm:{
                 confCode: uuidv4(),
                 isConfirmed: false
-            }
+            },
+            refreshTokenBlackList: []
         }
         await emailAdapter.sendEmail(email, newUser.emailConfirm.confCode)
         return usersRepository.createUser(newUser)

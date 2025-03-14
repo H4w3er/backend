@@ -43,5 +43,13 @@ export const usersService = {
     },
     async findUserById(id: string){
         return usersRepository.findUserById(id)
+    },
+    async isTokenAllowed(refreshToken: string, userId: string){
+        const user = await usersRepository.findUserById(userId)
+        if (!user) return false
+        if (user?.refreshTokenBlackList.includes(refreshToken)){
+            return false
+        }
+        return true
     }
 }

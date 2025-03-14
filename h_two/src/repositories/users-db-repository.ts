@@ -1,6 +1,5 @@
 import {userCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
-import {UserDbTypeCommon} from "../db/user-type-db";
 import {v4 as uuidv4} from "uuid";
 
 export const usersRepository = {
@@ -34,7 +33,11 @@ export const usersRepository = {
         const newCode = uuidv4()
         const user = await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.confCode': newCode}})
         return newCode
-    }
+    }/*,
+    async isTokenAllowed(refreshToken: string, userId: string){
+        const user = await userCollection.findOne({_id: new ObjectId(userId)})
+
+    }*/
 }
 
 const userMapper = (value: any)=> {
