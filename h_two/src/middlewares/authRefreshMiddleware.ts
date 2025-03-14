@@ -11,7 +11,7 @@ export const authRefreshMiddleware = async (req: Request, res: Response, next: N
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
     const check = await usersService.isTokenAllowed(refreshToken, userId)
-    console.log(await usersService.findUserById(userId))
+    //console.log(await usersService.findUserById(userId))
     if(!check) {
         res.sendStatus(401)
     } else {
