@@ -75,10 +75,21 @@ authRouter.post('/refresh_token', authRefreshMiddleware, async (req, res) =>{
     if (!userId) {
         res.sendStatus(401)
     } else {
-        const token = await jwtService.createJWT(userId)
-        const refreshToken = await jwtService.createRefreshToken(userId)
+        await usersService.addToBlackList(refreshToken, userId)
+        const newToken = await jwtService.createJWT(userId)
+        const newRefreshToken = await jwtService.createRefreshToken(userId)
 
-        res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
-        res.status(200).send({accessToken: token})
+        res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
+        res.status(200).send({accessToken: newToken})
+    }
+})
+authRouter.post('/logout', authRefreshMiddleware, async(req, res)=>{
+    const refreshToken = req.cookies.refreshToken;
+    const userId = await jwtService.getIdByToken(refreshToken)
+    if (!userId) {
+        res.sendStatus(401)
+    } else {
+        await usersService.addToBlackList(refreshToken, userId)
+        res.sendStatus(204)
     }
 })
