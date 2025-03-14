@@ -33,11 +33,11 @@ export const usersRepository = {
         const newCode = uuidv4()
         const user = await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.confCode': newCode}})
         return newCode
-    }/*,
-    async isTokenAllowed(refreshToken: string, userId: string){
-        const user = await userCollection.findOne({_id: new ObjectId(userId)})
-
-    }*/
+    },
+    async addToBlackList(refreshToken: string, userId: string){
+        await userCollection.updateOne({_id: new ObjectId(userId)}, {$push:{refreshTokenBlackList: refreshToken}})
+        return true
+    }
 }
 
 const userMapper = (value: any)=> {
