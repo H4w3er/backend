@@ -51,5 +51,8 @@ export const usersService = {
             return false
         }
         return true
+    },
+    async addToBlackList(refreshToken: string, userId: string){
+        await usersRepository.addToBlackList(refreshToken, userId)
     }
 }
