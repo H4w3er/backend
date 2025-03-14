@@ -21,7 +21,7 @@ export const jwtService = {
     },
     async createRefreshToken(id: ObjectId){
         const jwt = require('jsonwebtoken')
-        const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET,{expiresIn: '20 seconds'})
+        const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET,{expiresIn: '20 minutes'})
         return token
     }
 }
