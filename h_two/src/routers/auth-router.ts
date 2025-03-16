@@ -69,7 +69,7 @@ authRouter.post('/registration-confirmation', async (req, res) =>{
             }]})
 })
 
-authRouter.post('/refresh_token', authRefreshMiddleware, async (req, res) =>{
+authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
     if (!userId) {
