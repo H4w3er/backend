@@ -13,7 +13,7 @@ export const authRefreshMiddleware = async (req: Request, res: Response, next: N
     const check = await usersService.isTokenAllowed(refreshToken, userId)
     //console.log(await usersService.findUserById(userId))
     if(!check) {
-        res.sendStatus(401)
+        res.status(401).send("error")
     } else {
         next();
         return;
