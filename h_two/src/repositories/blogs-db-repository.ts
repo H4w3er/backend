@@ -20,7 +20,7 @@ export const blogsRepository = {
         await blogCollection.deleteMany()
         await postCollection.deleteMany()
         await userCollection.deleteMany()
-        //await commentsCollection.deleteMany()
+        await commentsCollection.deleteMany()
         return true;
     },
     async isBlog(blogId: string): Promise<boolean>{
