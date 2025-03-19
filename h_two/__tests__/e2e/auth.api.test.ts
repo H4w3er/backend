@@ -1,7 +1,5 @@
 import request from 'supertest'
 import {app} from "../../src";
-import {cookie} from "express-validator";
-import * as Cookies from "nodemailer/lib/fetch/cookies";
 
 describe('Token validation', () => {
     beforeAll(async ()=>{
