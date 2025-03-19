@@ -7,7 +7,12 @@ export type UserDbType = {
     "email": string,
     "passwordHash": string,
     "passwordSalt": string,
-    "createdAt": string
+    "createdAt": string,
+    "emailConfirm":{
+        "confCode": string,
+        "isConfirmed": boolean
+    },
+    "refreshTokenBlackList": Array<string>
 }
 export type UserDbTypeCommon = {
     "_id": ObjectId,
