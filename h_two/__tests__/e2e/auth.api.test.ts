@@ -50,17 +50,23 @@ describe('Token validation', () => {
             .set('Cookie', refreshToken);
 
         const refreshTokenCookie = response.headers['set-cookie'];
-        //console.log(response.status)
         expect(refreshTokenCookie).toBeDefined()
         expect(response.status).toBe(200);
         expect(response.body.accessToken).toMatch(/^([A-Za-z0-9_-]+).([A-Za-z0-9_-]+).([A-Za-z0-9_-]+)$/);
     });
-    /*it('should return an error if the "refresh" token has become invalid; status 401', async () => {
+    jest.setTimeout(30000);
+    it('should return an error if the "refresh" token has become invalid; status 401', async () => {
+        const responseRefreshToken = await request(app)
+            .post('/auth/login')
+            .send({
+                "loginOrEmail": "asdasd",
+                "password": "string"
+            })
+        await new Promise((r) => setTimeout(r, 20000));
+        const refreshToken = responseRefreshToken.headers['set-cookie']
         const response = await request(app)
-            .post('/refresh-token')
-            .set('Cookie', 'token=invalid_token');
-
-        expect(response.status).toBe(401);
-        expect(response.body.message).toBe('Token is invalid');
-    });*/
+            .post('/auth/refresh-token')
+            .set('Cookie', refreshToken);
+        expect(response.status).toBe(401)
+    });
 });
