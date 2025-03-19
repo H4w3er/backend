@@ -20,7 +20,12 @@ export const usersService = {
             email,
             passwordHash,
             passwordSalt,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            emailConfirm:{
+                confCode: '1',
+                isConfirmed: true
+            },
+            refreshTokenBlackList: []
         }
         return usersRepository.createUser(newUser)
     },
