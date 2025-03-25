@@ -4,6 +4,7 @@ import {BlogDbType} from "./blogs-type-db";
 import {PostDbType} from "./posts-type-db";
 import {UserDbType, UserDbTypeCommon} from "./user-type-db";
 import {CommentsDbType} from "./comments-type-db";
+import {refreshTokenDb} from "./refresh-Token-db";
 
 // получение доступа к бд
 const client: MongoClient = new MongoClient(SETTINGS.MONGO_URI)
@@ -14,6 +15,7 @@ export const blogCollection: Collection<BlogDbType> = db.collection<BlogDbType>(
 export const postCollection: Collection<PostDbType> = db.collection<PostDbType>(SETTINGS.PATH.POSTS)
 export const userCollection: Collection<UserDbTypeCommon> = db.collection<UserDbTypeCommon>(SETTINGS.PATH.USERS)
 export const commentsCollection: Collection<CommentsDbType> = db.collection<CommentsDbType>(SETTINGS.PATH.COMMENTS)
+export const refreshTokenCollection: Collection<refreshTokenDb> = db.collection<refreshTokenDb>(SETTINGS.PATH.SECURITYDEVICES)
 
 export async function runDb () {
     try {
