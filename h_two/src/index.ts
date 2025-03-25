@@ -8,6 +8,7 @@ import {usersRouter} from "./routers/users-router";
 import {authRouter} from "./routers/auth-router";
 import {commentsRouter} from "./routers/comments-router";
 import cookieParser from "cookie-parser";
+import {securityDevicesRouter} from "./routers/securityDevices-router";
 
 export const app = express()
 
@@ -20,6 +21,7 @@ app.use(SETTINGS.PATH.POSTS, postsRouter)
 app.use(SETTINGS.PATH.USERS, usersRouter)
 app.use(SETTINGS.PATH.AUTH, authRouter)
 app.use(SETTINGS.PATH.COMMENTS, commentsRouter)
+app.use(SETTINGS.PATH.SECURITYDEVICES, securityDevicesRouter)
 
 app.get('/', (req, res) => {
     res.status(200).json({version: '2.5'});
