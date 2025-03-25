@@ -1,4 +1,5 @@
-import {blogCollection, commentsCollection, postCollection, userCollection} from "../db/mongo-db";import {ObjectId} from "mongodb";
+import {blogCollection, commentsCollection, postCollection, userCollection} from "../db/mongo-db";
+import {ObjectId} from "mongodb";
 
 
 export const blogsRepository = {
