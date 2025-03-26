@@ -17,7 +17,7 @@ authRouter.post('/login', async (req,res) =>{
     if (checkUser){
         const token = await jwtService.createJWT(checkUser._id)
         const refreshToken = await jwtService.createRefreshToken(checkUser._id)
-        await securityDevicesService.addNewSession('1','biba','today','1', '12', 'tomora')
+        await securityDevicesService.addNewSession('1', req.headers['user-agent'], '1','1', new Date().toISOString(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)).toISOString())
         res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.status(200).send({accessToken: token})
     } else {
