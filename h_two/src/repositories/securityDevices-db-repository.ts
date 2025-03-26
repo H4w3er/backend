@@ -18,8 +18,9 @@ export const securityDevicesDbRepository={
         const sessions = await refreshTokenCollection.find({}).toArray() as any[];
         return sessionsMapper(sessions)
     },
-    async addNewSession(ip:string, title: string, lastActiveDate: string, deviceId: string, issuedAt: string, validUntil: string){
+    async addNewSession(ip:string, title: string|undefined, lastActiveDate: string, deviceId: string, issuedAt: string, validUntil: string){
         await refreshTokenCollection.insertOne({ip, title, lastActiveDate, deviceId, issuedAt, validUntil})
+        console.log(await refreshTokenCollection.find({}).toArray() as any[])
         return 0
     }
 }
