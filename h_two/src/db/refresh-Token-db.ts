@@ -3,6 +3,6 @@ export type refreshTokenDb = {
     title: string|undefined
     lastActiveDate: string
     deviceId: string
-    issuedAt: string
+    issuedAt: Date
     validUntil: string
 }
