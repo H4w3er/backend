@@ -16,8 +16,8 @@ authRouter.post('/login', async (req,res) =>{
     const checkUser = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (checkUser){
         const token = await jwtService.createJWT(checkUser._id)
-        const refreshToken = await jwtService.createRefreshToken(checkUser._id)
-        await securityDevicesService.addNewSession('1', req.headers['user-agent'], '1','1', new Date().toISOString(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)).toISOString())
+        const refreshToken = await jwtService.createRefreshToken(checkUser._id, req.headers['user-agent'])
+        await securityDevicesService.addNewSession('1', req.headers['user-agent'], '1','1', new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)).toISOString())
         res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.status(200).send({accessToken: token})
     } else {
@@ -69,7 +69,7 @@ authRouter.post('/registration-confirmation', async (req, res) =>{
                 "field": "code"
             }]})
 })
-authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
+/*authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
     if (!userId) {
@@ -82,7 +82,7 @@ authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
         res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.status(200).send({accessToken: newToken})
     }
-})
+})*/
 authRouter.post('/logout', authRefreshMiddleware, async(req, res)=>{
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
