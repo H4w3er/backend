@@ -21,7 +21,7 @@ export const securityDevicesDbRepository={
     },
     async addNewSession(ip:string, title: string|undefined, lastActiveDate: string, deviceId: string, issuedAt: Date, validUntil: string){
         await refreshTokenCollection.insertOne({ip, title, lastActiveDate, deviceId, issuedAt, validUntil})
-        //console.log(await refreshTokenCollection.find({}).toArray() as any[])
+        console.log(await refreshTokenCollection.find({}).toArray() as any[])
         return 0
     },
     async getActiveSessionsByDeviceName(deviceName : string|undefined){
