@@ -1,5 +1,7 @@
 import request from 'supertest'
 import {app} from "../../src";
+import {header} from "express-validator";
+import {response} from "express";
 
 describe('Token validation', () => {
     beforeAll(async ()=>{
@@ -67,4 +69,14 @@ describe('Token validation', () => {
             .set('Cookie', refreshToken);
         expect(response.status).toBe(401)
     });
+    /*it('should read from headers ip address of user', async()=>{
+        const responseAfterLogin = await request(app)
+            .post('/auth/login')
+            .send({
+                "loginOrEmail": "asdasd",
+                "password": "string"
+            })
+            .set('Cookie', ['x-forwarded-for=192.168.0.1']);
+        expect(response.status).toBe(200)
+    })*/
 });
