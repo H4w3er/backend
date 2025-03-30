@@ -1,11 +1,15 @@
 import {securityDevicesDbRepository} from "../repositories/securityDevices-db-repository";
+import {ObjectId} from "mongodb";
+import {securityDevicesRouter} from "../routers/securityDevices-router";
 
 export const securityDevicesService = {
     async getActiveSessions(){
         return await securityDevicesDbRepository.getActiveSessions()
     },
-    async addNewSession(ip:string, title: string|undefined, lastActiveDate: string, deviceId: string, issuedAt: Date, validUntil: string){
-        await securityDevicesDbRepository.addNewSession(ip, title, lastActiveDate, deviceId, issuedAt, validUntil)
+    async addNewSession(ip:string|undefined|string[], title: string|undefined, lastActiveDate: string, deviceId: string, issuedAt: Date, validUntil: string, userId: ObjectId){
+        const activeSessions = await securityDevicesDbRepository.getActiveSessionsByUserId(userId)
+
+        await securityDevicesDbRepository.addNewSession(ip, title, lastActiveDate, deviceId, issuedAt, validUntil, userId)
         return 0
     }
 }
