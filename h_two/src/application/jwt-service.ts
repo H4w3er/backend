@@ -19,7 +19,7 @@ export const jwtService = {
         }
     },
     async createRefreshToken(id: ObjectId, deviceName: string | undefined) {
-        const activeSession = await securityDevicesDbRepository.getActiveSessionsByDeviceName(deviceName)
+        const activeSession = await securityDevicesDbRepository.getActiveSessionsByUserId(id)
         const activeSessionCount = activeSession.length
         const jwt = require('jsonwebtoken')
         /*if (activeSessionCount > 0) {
