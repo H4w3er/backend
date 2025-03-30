@@ -17,7 +17,7 @@ authRouter.post('/login', async (req,res) =>{
     if (checkUser){
         const token = await jwtService.createJWT(checkUser._id)
         const refreshToken = await jwtService.createRefreshToken(checkUser._id, req.headers['user-agent'])
-        await securityDevicesService.addNewSession('1', req.headers['user-agent'], '1',refreshToken.deviceId, new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)).toISOString())
+        await securityDevicesService.addNewSession(req.headers['x-forwarded-for'], req.headers['user-agent'], '1',refreshToken.deviceId, new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)).toISOString(), checkUser._id)
         res.cookie('refreshToken', refreshToken.token, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.status(200).send({accessToken: token})
     } else {
