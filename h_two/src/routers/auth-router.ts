@@ -9,6 +9,7 @@ import {inputValidationMiddleware} from "../middlewares/input-validation-middlew
 import {SETTINGS} from "../settings";
 import {authRefreshMiddleware} from "../middlewares/authRefreshMiddleware";
 import {securityDevicesService} from "../domain/securityDevices-service";
+import {ObjectId} from "mongodb";
 
 export const authRouter = Router({})
 
@@ -16,9 +17,10 @@ authRouter.post('/login', async (req,res) =>{
     const checkUser = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (checkUser){
         const token = await jwtService.createJWT(checkUser._id)
-        const refreshToken = await jwtService.createRefreshToken(checkUser._id, req.headers['user-agent'])
-        await securityDevicesService.addNewSession(req.headers['x-forwarded-for'], req.headers['user-agent'], '1',refreshToken.deviceId, new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)).toISOString(), checkUser._id)
+        const refreshToken = await jwtService.createRefreshToken(checkUser._id, req.cookies.deviceId)
+        await securityDevicesService.addNewSession(req.headers['x-forwarded-for'], req.headers['user-agent'], '1', new ObjectId(refreshToken.deviceId), new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)).toISOString(), checkUser._id)
         res.cookie('refreshToken', refreshToken.token, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
+        res.cookie('deviceId', refreshToken.deviceId, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.status(200).send({accessToken: token})
     } else {
         res.sendStatus(401)
