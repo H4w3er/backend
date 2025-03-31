@@ -1,7 +1,7 @@
 import {UserDbType} from "../db/user-type-db";
 import {SETTINGS} from "../settings";
 import {ObjectId} from "mongodb";
-import {securityDevicesDbRepository} from "../repositories/securityDevices-db-repository";
+import {securityDevicesService} from "../domain/securityDevices-service";
 
 export const jwtService = {
     async createJWT(id: ObjectId) {
@@ -18,27 +18,22 @@ export const jwtService = {
             return null
         }
     },
-    async createRefreshToken(id: ObjectId, deviceName: string | undefined) {
-        const activeSession = await securityDevicesDbRepository.getActiveSessionsByUserId(id)
-        const activeSessionCount = activeSession.length
+    async createRefreshToken(id: ObjectId, acceptedDeviceId: string | string[] | undefined) {
         const jwt = require('jsonwebtoken')
-        /*if (activeSessionCount > 0) {
-        const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'}, {deviceId: activeSession[activeSessionCount - 1].deviceId + 1})
-        return {
-            token: token,
-            deviceId: activeSession[activeSessionCount - 1].deviceId + 1
-        }
-    } else {
-        const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'}, {deviceId: 1})
-        return {
-            token: token,
-            deviceId: 1
-        }
-    }*/
-        const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'}, {deviceId: 1})
-        return {
-            token: token,
-            deviceId: '1'
+        if (acceptedDeviceId!=undefined) {
+            acceptedDeviceId = acceptedDeviceId.toString()
+            const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'}, {deviceId: acceptedDeviceId})
+            return {
+                token: token,
+                deviceId: acceptedDeviceId
+            }
+        } else {
+            const deviceId = new ObjectId()
+            const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'}, {deviceId: deviceId})
+            return {
+                token: token,
+                deviceId: deviceId
+            }
         }
     }
 }
