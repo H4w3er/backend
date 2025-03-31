@@ -6,10 +6,13 @@ export const securityDevicesService = {
     async getActiveSessions(){
         return await securityDevicesDbRepository.getActiveSessions()
     },
-    async addNewSession(ip:string|undefined|string[], title: string|undefined, lastActiveDate: string, deviceId: string, issuedAt: Date, validUntil: string, userId: ObjectId){
+    async addNewSession(ip:string|undefined|string[], title: string|undefined, lastActiveDate: string, deviceId: ObjectId, issuedAt: Date, validUntil: string, userId: ObjectId){
         const activeSessions = await securityDevicesDbRepository.getActiveSessionsByUserId(userId)
-
         await securityDevicesDbRepository.addNewSession(ip, title, lastActiveDate, deviceId, issuedAt, validUntil, userId)
         return 0
+    },
+    async getActiveSessionsByUserId(userId: ObjectId){
+        return await securityDevicesDbRepository.getActiveSessionsByUserId(userId)
     }
+
 }
