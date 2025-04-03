@@ -1,6 +1,5 @@
 import {securityDevicesDbRepository} from "../repositories/securityDevices-db-repository";
 import {ObjectId} from "mongodb";
-import {securityDevicesRouter} from "../routers/securityDevices-router";
 
 export const securityDevicesService = {
     async getActiveSessions(userId: ObjectId){
