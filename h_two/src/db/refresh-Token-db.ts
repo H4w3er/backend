@@ -6,6 +6,6 @@ export type refreshTokenDb = {
     lastActiveDate: string
     deviceId: ObjectId
     issuedAt: Date
-    validUntil: string
+    validUntil: Date
     userId: ObjectId
 }
