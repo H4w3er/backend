@@ -74,10 +74,12 @@ authRouter.post('/registration-confirmation', async (req, res) =>{
 authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
+    const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
     if (!userId) {
         res.sendStatus(401)
     } else {
         await usersService.addToBlackList(refreshToken, userId)
+        await securityDevicesService.deleteSessionByDeviceId(deviceId, userId)
         const newToken = await jwtService.createJWT(userId)
         const newRefreshToken = await jwtService.createRefreshToken(userId, req.cookies.deviceId)
 
