@@ -18,6 +18,15 @@ export const jwtService = {
             return null
         }
     },
+    async getDeviceIdByToken(token: string | undefined){
+        try {
+            const jwt = require('jsonwebtoken')
+            const result = jwt.verify(token, SETTINGS.JWT_SECRET)
+            return result.deviceId
+        } catch (error) {
+            return null
+        }
+    },
     async createRefreshToken(id: ObjectId, acceptedDeviceId: string | string[] | undefined) {
         const jwt = require('jsonwebtoken')
         if (acceptedDeviceId!=undefined) {
