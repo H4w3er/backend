@@ -18,7 +18,7 @@ authRouter.post('/login', async (req,res) =>{
     if (checkUser){
         const token = await jwtService.createJWT(checkUser._id)
         const refreshToken = await jwtService.createRefreshToken(checkUser._id, req.cookies.deviceId)
-        await securityDevicesService.addNewSession(req.headers['x-forwarded-for'], req.headers['user-agent'], '1', new ObjectId(refreshToken.deviceId), new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)).toISOString(), checkUser._id)
+        await securityDevicesService.addNewSession(req.headers['x-forwarded-for'], req.headers['user-agent'], new Date().toISOString(), new ObjectId(refreshToken.deviceId), new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)), checkUser._id)
         res.cookie('refreshToken', refreshToken.token, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.cookie('deviceId', refreshToken.deviceId, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.status(200).send({accessToken: token})
@@ -71,7 +71,7 @@ authRouter.post('/registration-confirmation', async (req, res) =>{
                 "field": "code"
             }]})
 })
-/*authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
+authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
     if (!userId) {
@@ -79,12 +79,12 @@ authRouter.post('/registration-confirmation', async (req, res) =>{
     } else {
         await usersService.addToBlackList(refreshToken, userId)
         const newToken = await jwtService.createJWT(userId)
-        const newRefreshToken = await jwtService.createRefreshToken(userId)
+        const newRefreshToken = await jwtService.createRefreshToken(userId, req.cookies.deviceId)
 
         res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
         res.status(200).send({accessToken: newToken})
     }
-})*/
+})
 authRouter.post('/logout', authRefreshMiddleware, async(req, res)=>{
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
