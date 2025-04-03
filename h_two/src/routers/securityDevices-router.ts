@@ -21,5 +21,11 @@ securityDevicesRouter.delete('/devices', authRefreshMiddleware, async (req, res)
 })
 
 securityDevicesRouter.delete('/devices/:id', authRefreshMiddleware, async (req, res) =>{
-    await securityDevicesService.deleteSessionByDeviceId()
+    const refreshToken = req.cookies.refreshToken;
+    const userId = await jwtService.getIdByToken(refreshToken)
+    const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
+    const deleted = await securityDevicesService.deleteSessionByDeviceId(deviceId, userId)
+    if (deleted === 0) res.sendStatus(403)
+    else if (deleted===1) res.sendStatus(404)
+    else res.sendStatus(204)
 })
