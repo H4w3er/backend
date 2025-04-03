@@ -2,10 +2,11 @@ import {Router} from "express";
 import {authRefreshMiddleware} from "../middlewares/authRefreshMiddleware";
 import {securityDevicesService} from "../domain/securityDevices-service";
 import {jwtService} from "../application/jwt-service";
+import {CRLChecking} from "../middlewares/CRL-cheking";
 
 export const securityDevicesRouter = Router({});
 
-securityDevicesRouter.get('/devices', authRefreshMiddleware, async (req, res) =>{
+securityDevicesRouter.get('/devices', authRefreshMiddleware, CRLChecking, async (req, res) =>{
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
     const sessions = await securityDevicesService.getActiveSessions(userId)
