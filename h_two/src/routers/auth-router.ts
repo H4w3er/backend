@@ -10,10 +10,11 @@ import {SETTINGS} from "../settings";
 import {authRefreshMiddleware} from "../middlewares/authRefreshMiddleware";
 import {securityDevicesService} from "../domain/securityDevices-service";
 import {ObjectId} from "mongodb";
+import {CRLChecking} from "../middlewares/CRL-cheking";
 
 export const authRouter = Router({})
 
-authRouter.post('/login', async (req,res) =>{
+authRouter.post('/login', CRLChecking, async (req,res) =>{
     const checkUser = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (checkUser){
         const token = await jwtService.createJWT(checkUser._id)
@@ -90,10 +91,12 @@ authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
 authRouter.post('/logout', authRefreshMiddleware, async(req, res)=>{
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
+    const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
     if (!userId) {
         res.sendStatus(401)
     } else {
         await usersService.addToBlackList(refreshToken, userId)
+        await securityDevicesService.deleteSessionByDeviceId(deviceId, userId)
         res.sendStatus(204)
     }
 })
