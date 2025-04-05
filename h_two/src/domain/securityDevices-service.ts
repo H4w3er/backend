@@ -17,12 +17,17 @@ export const securityDevicesService = {
         await securityDevicesDbRepository.deleteAllOther(userId, deviceId)
         return 0
     },
-    async deleteSessionByDeviceId(deviceId: ObjectId, userId: ObjectId){
-        const session = await securityDevicesDbRepository.getSessionsByDeviceId(deviceId)
+    async deleteSessionByDeviceId(deviceId: string, userId: ObjectId){
+        try {
+            const session = await securityDevicesDbRepository.getSessionsByDeviceId(new ObjectId(deviceId))
+        } catch (er){
+            return 1
+        }
+        const session = await securityDevicesDbRepository.getSessionsByDeviceId(new ObjectId(deviceId))
         if (!session) return 1
         else if (session?.userId!=userId) return 0
         else {
-            const deleted = await securityDevicesDbRepository.deleteSessionByDeviceId(deviceId)
+            const deleted = await securityDevicesDbRepository.deleteSessionByDeviceId(new ObjectId(deviceId))
             if (deleted.deletedCount === 0) return 1
             else return 2
         }
