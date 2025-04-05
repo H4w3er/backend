@@ -2,7 +2,7 @@ import {
     blogCollection,
     commentsCollection,
     postCollection,
-    refreshTokenCollection,
+    refreshTokenCollection, requestsToApiCollection,
     userCollection
 } from "../db/mongo-db";
 import {ObjectId} from "mongodb";
@@ -29,6 +29,7 @@ export const blogsRepository = {
         await userCollection.deleteMany()
         await commentsCollection.deleteMany()
         await refreshTokenCollection.deleteMany()
+        await requestsToApiCollection.deleteMany()
         return true;
     },
     async isBlog(blogId: string): Promise<boolean>{
