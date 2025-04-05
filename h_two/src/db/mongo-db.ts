@@ -17,7 +17,7 @@ export const postCollection: Collection<PostDbType> = db.collection<PostDbType>(
 export const userCollection: Collection<UserDbTypeCommon> = db.collection<UserDbTypeCommon>(SETTINGS.PATH.USERS)
 export const commentsCollection: Collection<CommentsDbType> = db.collection<CommentsDbType>(SETTINGS.PATH.COMMENTS)
 export const refreshTokenCollection: Collection<refreshTokenDb> = db.collection<refreshTokenDb>(SETTINGS.PATH.SECURITYDEVICES)
-export const requestsToApiCollection: Collection<requestsToApi> = db.collection<requestsToApi>(SETTINGS.PATH.SECURITYDEVICES)
+export const requestsToApiCollection: Collection<requestsToApi> = db.collection<requestsToApi>(SETTINGS.PATH.REQUESTSTOAPI)
 
 export async function runDb () {
     try {
