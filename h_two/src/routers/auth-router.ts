@@ -6,7 +6,6 @@ import {emailAdapter} from "../adapters/emailAdapter";
 import {emailValidation, loginValidation, passwordValidation} from "../middlewares/auth-validation";
 import {authService} from "../domain/auth-service";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
-import {SETTINGS} from "../settings";
 import {authRefreshMiddleware} from "../middlewares/authRefreshMiddleware";
 import {securityDevicesService} from "../domain/securityDevices-service";
 import {ObjectId} from "mongodb";
@@ -20,8 +19,8 @@ authRouter.post('/login', CRLChecking, async (req,res) =>{
         const token = await jwtService.createJWT(checkUser._id)
         const refreshToken = await jwtService.createRefreshToken(checkUser._id, req.cookies.deviceId)
         await securityDevicesService.addNewSession(req.headers['x-forwarded-for'], req.headers['user-agent'], new Date().toISOString(), new ObjectId(refreshToken.deviceId), new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)), checkUser._id)
-        res.cookie('refreshToken', refreshToken.token, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
-        res.cookie('deviceId', refreshToken.deviceId, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
+        res.cookie('refreshToken', refreshToken.token, {httpOnly: true, secure: true})
+        res.cookie('deviceId', refreshToken.deviceId, {httpOnly: true, secure: true})
         res.status(200).send({accessToken: token})
     } else {
         res.sendStatus(401)
@@ -35,7 +34,7 @@ authRouter.get('/me', authBearerMiddleware, async (req, res) =>{
     }
     res.status(200).send(thisUser)
 })
-authRouter.post('/registration-email-resending', emailValidation, inputValidationMiddleware, async (req, res) =>{
+authRouter.post('/registration-email-resending', CRLChecking, emailValidation, inputValidationMiddleware, async (req, res) =>{
     const result = await authService.sendConfirmationLetter(req.body.email)
     if (result) res.sendStatus(204)
     else res.status(400).send({"errorsMessages": [
@@ -44,7 +43,7 @@ authRouter.post('/registration-email-resending', emailValidation, inputValidatio
                 "field": "email"
             }]})
 })
-authRouter.post('/registration', loginValidation, emailValidation, passwordValidation, inputValidationMiddleware, async (req, res) =>{
+authRouter.post('/registration', CRLChecking, loginValidation, emailValidation, passwordValidation, inputValidationMiddleware, async (req, res) =>{
     const newUser = await authService.createUser(req.body.login, req.body.password, req.body.email)
     if(newUser === 1) {
         res.status(400).send({"errorsMessages": [
@@ -63,7 +62,7 @@ authRouter.post('/registration', loginValidation, emailValidation, passwordValid
         res.sendStatus(204)
     }
 })
-authRouter.post('/registration-confirmation', async (req, res) =>{
+authRouter.post('/registration-confirmation', CRLChecking, async (req, res) =>{
     const verify = await emailAdapter.checkCode(req.body.code)
     if (verify) res.sendStatus(204)
     else res.status(400).send({"errorsMessages": [
@@ -84,7 +83,7 @@ authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
         const newToken = await jwtService.createJWT(userId)
         const newRefreshToken = await jwtService.createRefreshToken(userId, req.cookies.deviceId)
 
-        res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true, path: SETTINGS.PATH.AUTH})
+        res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true})
         res.status(200).send({accessToken: newToken})
     }
 })
