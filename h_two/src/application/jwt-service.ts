@@ -1,7 +1,5 @@
-import {UserDbType} from "../db/user-type-db";
 import {SETTINGS} from "../settings";
 import {ObjectId} from "mongodb";
-import {securityDevicesService} from "../domain/securityDevices-service";
 
 export const jwtService = {
     async createJWT(id: ObjectId) {
@@ -31,14 +29,14 @@ export const jwtService = {
         const jwt = require('jsonwebtoken')
         if (acceptedDeviceId!=undefined) {
             acceptedDeviceId = acceptedDeviceId.toString()
-            const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'}, {deviceId: acceptedDeviceId})
+            const token = jwt.sign({userId: id, deviceId: acceptedDeviceId}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'})
             return {
                 token: token,
                 deviceId: acceptedDeviceId
             }
         } else {
             const deviceId = new ObjectId()
-            const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'}, {deviceId: deviceId})
+            const token = jwt.sign({userId: id, deviceId: deviceId}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'})
             return {
                 token: token,
                 deviceId: deviceId
