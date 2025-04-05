@@ -20,7 +20,6 @@ export const securityDevicesDbRepository={
         const sessions = await refreshTokenCollection.find({userId: new ObjectId(userId)}).toArray() as any[];
         const activeSessions = sessions.filter(session => session.validUntil >  new Date()
         )
-        console.log(activeSessions)
         return sessionsMapper(activeSessions)
     },
     async addNewSession(ip:string|undefined|string[], title: string|undefined, lastActiveDate: string, deviceId: ObjectId, issuedAt: Date, validUntil: Date, userId:ObjectId){
