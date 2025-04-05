@@ -15,6 +15,7 @@ export const app = express()
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware)
 app.use(cookieParser())
+app.set('trust proxy', true)
 
 app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postsRouter)
