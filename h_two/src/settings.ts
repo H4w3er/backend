@@ -9,7 +9,8 @@ export const SETTINGS = {
         USERS: '/users',
         COMMENTS: '/comments',
         AUTH: '/auth',
-        SECURITYDEVICES: '/security'
+        SECURITYDEVICES: '/security',
+        REQUESTSTOAPI: '/req'
     },
     MONGO_URI: process.env.MONGO_URL || 'mongodb://localhost:27017',
     DB_NAME: process.env.DB_NAME || '',
