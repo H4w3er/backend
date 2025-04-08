@@ -8,4 +8,5 @@ export type refreshTokenDb = {
     issuedAt: Date
     validUntil: Date
     userId: ObjectId
+    refreshToken: string
 }
