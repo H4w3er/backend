@@ -1,13 +1,14 @@
 import {securityDevicesDbRepository} from "../repositories/securityDevices-db-repository";
 import {ObjectId} from "mongodb";
+import {usersService} from "./users-service";
 
 export const securityDevicesService = {
     async getActiveSessions(userId: ObjectId){
         return await securityDevicesDbRepository.getActiveSessions(userId)
     },
-    async addNewSession(ip:string|undefined|string[], title: string|undefined, lastActiveDate: string, deviceId: ObjectId, issuedAt: Date, validUntil: Date, userId: ObjectId){
+    async addNewSession(ip:string|undefined|string[], title: string|undefined, lastActiveDate: string, deviceId: ObjectId, issuedAt: Date, validUntil: Date, userId: ObjectId, refreshToken: string){
         const activeSessions = await securityDevicesDbRepository.getSessionsByUserId(userId)
-        await securityDevicesDbRepository.addNewSession(ip, title, lastActiveDate, deviceId, issuedAt, validUntil, userId)
+        await securityDevicesDbRepository.addNewSession(ip, title, lastActiveDate, deviceId, issuedAt, validUntil, userId, refreshToken)
         return 0
     },
     async getActiveSessionsByUserId(userId: ObjectId){
@@ -29,7 +30,14 @@ export const securityDevicesService = {
         else {
             const deleted = await securityDevicesDbRepository.deleteSessionByDeviceId(new ObjectId(deviceId))
             if (deleted.deletedCount === 0) return 1
-            else return 2
+            else {
+                await usersService.addToBlackListAnother(session.refreshToken, session.userId)
+                return 2
+            }
         }
+    },
+    async sessionUpdate(userId: ObjectId, deviceId: ObjectId, refreshToken: string){
+        await securityDevicesDbRepository.sessionUpdate(userId, deviceId, refreshToken)
+        return 0
     }
 }
