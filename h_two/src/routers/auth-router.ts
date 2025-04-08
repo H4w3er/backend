@@ -18,7 +18,7 @@ authRouter.post('/login', CRLChecking, async (req,res) =>{
     if (checkUser){
         const token = await jwtService.createJWT(checkUser._id)
         const refreshToken = await jwtService.createRefreshToken(checkUser._id, req.cookies.deviceId)
-        await securityDevicesService.addNewSession(req.headers['x-forwarded-for'], req.headers['user-agent'], new Date().toISOString(), new ObjectId(refreshToken.deviceId), new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)), checkUser._id)
+        await securityDevicesService.addNewSession(req.headers['x-forwarded-for'], req.headers['user-agent'], new Date().toISOString(), new ObjectId(refreshToken.deviceId), new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)), checkUser._id, refreshToken.token)
         res.cookie('refreshToken', refreshToken.token, {httpOnly: true, secure: true})
         res.cookie('deviceId', refreshToken.deviceId, {httpOnly: true, secure: true})
         res.status(200).send({accessToken: token})
@@ -79,11 +79,11 @@ authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
         res.sendStatus(401)
     } else {
         await usersService.addToBlackList(refreshToken, userId)
-        await securityDevicesService.deleteSessionByDeviceId(deviceId, userId)
+        //await securityDevicesService.deleteSessionByDeviceId(deviceId, userId)
         const newToken = await jwtService.createJWT(userId)
         const newRefreshToken = await jwtService.createRefreshToken(userId, req.cookies.deviceId)
-
-        res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true})
+        await securityDevicesService.sessionUpdate(userId, deviceId, newRefreshToken.token)
+        res.cookie('refreshToken', newRefreshToken.token, {httpOnly: true, secure: true})
         res.status(200).send({accessToken: newToken})
     }
 })
