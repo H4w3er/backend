@@ -60,5 +60,9 @@ export const usersService = {
     async addToBlackList(refreshToken: string, userId: string){
         await usersRepository.addToBlackList(refreshToken, userId)
         return 0
+    },
+    async addToBlackListAnother(refreshToken: string, userId: ObjectId){
+        await usersRepository.addToBlackList(refreshToken, userId)
+        return 0
     }
 }
