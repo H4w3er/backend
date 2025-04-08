@@ -34,7 +34,7 @@ export const usersRepository = {
         const user = await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.confCode': newCode}})
         return newCode
     },
-    async addToBlackList(refreshToken: string, userId: string){
+    async addToBlackList(refreshToken: string, userId: string | ObjectId){
         await userCollection.updateOne({_id: new ObjectId(userId)}, {$push:{refreshTokenBlackList: refreshToken}})
         return true
     }
