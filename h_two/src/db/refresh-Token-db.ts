@@ -4,7 +4,7 @@ export type refreshTokenDb = {
     ip: string|undefined|string[]
     title: string|undefined
     lastActiveDate: string
-    deviceId: ObjectId
+    deviceId: string
     issuedAt: Date
     validUntil: Date
     userId: ObjectId
