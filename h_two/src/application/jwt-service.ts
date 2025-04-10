@@ -25,7 +25,7 @@ export const jwtService = {
             return null
         }
     },
-    async createRefreshToken(id: ObjectId, acceptedDeviceId: string | string[] | undefined) {
+    async createRefreshToken(id: ObjectId, acceptedDeviceId?: string | string[] | undefined) {
         const jwt = require('jsonwebtoken')
         if (acceptedDeviceId!=undefined) {
             acceptedDeviceId = acceptedDeviceId.toString()
@@ -36,7 +36,7 @@ export const jwtService = {
             }
         } else {
             const deviceId = new ObjectId()
-            const token = jwt.sign({userId: id, deviceId: deviceId}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'})
+            const token = jwt.sign({userId: id, deviceId: deviceId.toString()}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'})
             return {
                 token: token,
                 deviceId: deviceId
