@@ -10,17 +10,18 @@ securityDevicesRouter.get('/devices', authRefreshMiddleware, async (req, res) =>
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
     const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
-    const sessions = await securityDevicesService.getActiveSessions(userId)
-
     await securityDevicesService.sessionUpdate(userId, deviceId, refreshToken)
+
+    const sessions = await securityDevicesService.getActiveSessions(userId)
 
     res.status(200).send(sessions)
 })
 
 securityDevicesRouter.delete('/devices', authRefreshMiddleware, async (req, res) =>{
     const refreshToken = req.cookies.refreshToken;
+    console.log(`refToken`, refreshToken)
+    const deviceId = await jwtService.getDeviceIdByToken(refreshToken);
     const userId = await jwtService.getIdByToken(refreshToken)
-    const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
     await securityDevicesService.deleteAllOther(userId, deviceId)
     res.sendStatus(204)
 })
