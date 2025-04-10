@@ -8,7 +8,6 @@ import {authService} from "../domain/auth-service";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authRefreshMiddleware} from "../middlewares/authRefreshMiddleware";
 import {securityDevicesService} from "../domain/securityDevices-service";
-import {ObjectId} from "mongodb";
 import {CRLChecking} from "../middlewares/CRL-cheking";
 
 export const authRouter = Router({})
@@ -17,8 +16,11 @@ authRouter.post('/login', CRLChecking, async (req,res) =>{
     const checkUser = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (checkUser){
         const token = await jwtService.createJWT(checkUser._id)
-        const refreshToken = await jwtService.createRefreshToken(checkUser._id, req.cookies.deviceId)
-        await securityDevicesService.addNewSession(req.headers['x-forwarded-for'], req.headers['user-agent'], new Date().toISOString(), new ObjectId(refreshToken.deviceId), new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)), checkUser._id, refreshToken.token)
+        const refreshToken = await jwtService.createRefreshToken(checkUser._id)
+        const ip =  req.headers['x-forwarded-for'] as string
+        const title =  req.headers['user-agent'] ?? null
+
+        await securityDevicesService.addNewSession(ip,title, new Date().toISOString(), refreshToken.deviceId.toString(), new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)), checkUser._id, refreshToken.token)
         res.cookie('refreshToken', refreshToken.token, {httpOnly: true, secure: true})
         res.cookie('deviceId', refreshToken.deviceId, {httpOnly: true, secure: true})
         res.status(200).send({accessToken: token})
@@ -26,6 +28,10 @@ authRouter.post('/login', CRLChecking, async (req,res) =>{
         res.sendStatus(401)
     }
 })
+// типизация как показали
+// лишние рутурны убрать
+// перенести часть логики в сервис
+// пофиксить delete ендпоинт
 authRouter.get('/me', authBearerMiddleware, async (req, res) =>{
     const thisUser = {
         "email": req.user!.email,
@@ -79,11 +85,11 @@ authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
         res.sendStatus(401)
     } else {
         await usersService.addToBlackList(refreshToken, userId)
-        //await securityDevicesService.deleteSessionByDeviceId(deviceId, userId)
         const newToken = await jwtService.createJWT(userId)
         const newRefreshToken = await jwtService.createRefreshToken(userId, req.cookies.deviceId)
         await securityDevicesService.sessionUpdate(userId, deviceId, newRefreshToken.token)
         res.cookie('refreshToken', newRefreshToken.token, {httpOnly: true, secure: true})
+        res.cookie('deviceId', newRefreshToken.deviceId, {httpOnly: true, secure: true})
         res.status(200).send({accessToken: newToken})
     }
 })

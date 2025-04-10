@@ -2,13 +2,18 @@ import {Router} from "express";
 import {authRefreshMiddleware} from "../middlewares/authRefreshMiddleware";
 import {securityDevicesService} from "../domain/securityDevices-service";
 import {jwtService} from "../application/jwt-service";
+import {usersService} from "../domain/users-service";
 
 export const securityDevicesRouter = Router({});
 
 securityDevicesRouter.get('/devices', authRefreshMiddleware, async (req, res) =>{
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
+    const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
     const sessions = await securityDevicesService.getActiveSessions(userId)
+
+    await securityDevicesService.sessionUpdate(userId, deviceId, refreshToken)
+
     res.status(200).send(sessions)
 })
 
@@ -24,6 +29,7 @@ securityDevicesRouter.delete('/devices/:id', authRefreshMiddleware, async (req, 
     const refreshToken = req.cookies.refreshToken;
     const userId = await jwtService.getIdByToken(refreshToken)
     const deviceId = req.params.id
+    //await usersService.addToBlackListAnother(refreshToken, userId)
     const deleted = await securityDevicesService.deleteSessionByDeviceId(deviceId, userId)
     if (deleted === 0) res.sendStatus(403)
     else if (deleted===1) res.sendStatus(404)
