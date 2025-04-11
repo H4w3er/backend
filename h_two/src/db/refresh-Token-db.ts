@@ -1,8 +1,8 @@
 import {ObjectId} from "mongodb";
 
 export type refreshTokenDb = {
-    ip: string|undefined|string[]
-    title: string|undefined
+    ip: string
+    title: string | 'noTitle'
     lastActiveDate: string
     deviceId: string
     issuedAt: Date
