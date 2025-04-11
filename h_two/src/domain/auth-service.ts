@@ -8,10 +8,20 @@ import {emailAdapter} from "../adapters/emailAdapter";
 export const authService = {
     async createUser(login: string, password: string, email: string) {
         if (await usersRepository.findByLoginOrEmail(login)){
-            return 1
+            const error: object = {"errorsMessages": [
+                    {
+                        "message": "the login is not unique",
+                        "field": "login"
+                    }]}
+            return error
         }
         if (await usersRepository.findByLoginOrEmail(email)){
-            return 2
+            const error: object = {"errorsMessages":[
+                    {
+                        "message": "the email address is not unique",
+                        "field": "email"
+                    }]}
+            return error
         }
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this.createHash(password, passwordSalt)
