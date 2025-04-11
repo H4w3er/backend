@@ -6,33 +6,35 @@ export const securityDevicesService = {
     async getActiveSessions(userId: ObjectId){
         return await securityDevicesDbRepository.getActiveSessions(userId)
     },
-    async addNewSession(ip:string, title: string | undefined, lastActiveDate: string, deviceId: string, issuedAt: Date, validUntil: Date, userId: ObjectId, refreshToken: string){
-        const activeSessions = await securityDevicesDbRepository.getSessionsByUserId(userId)
+    async addNewSession(ip:string, title: string = 'noTitle', deviceId: string, userId: ObjectId, refreshToken: string){
+        const issuedAt = new Date()
+        const lastActiveDate = new Date().toISOString()
+        const validUntil = new Date(new Date().setSeconds(new Date().getSeconds() + 20))
         await securityDevicesDbRepository.addNewSession(ip, title, lastActiveDate, deviceId, issuedAt, validUntil, userId, refreshToken)
-        return 0
     },
-    async getActiveSessionsByUserId(userId: ObjectId){
-        return await securityDevicesDbRepository.getSessionsByUserId(userId)
-    },
-    async deleteAllOther(userId: ObjectId, deviceId: string){
+    async deleteAllOther(userId: string, deviceId: string){
+        const otherSessions = await securityDevicesDbRepository.getSessionsByUserId(userId)
+        for (let i = 0; i<otherSessions.length; i++){
+            if (otherSessions[i].deviceId != deviceId) {
+                await usersService.addToBlackListAnother(otherSessions[i].refreshToken, otherSessions[i].userId)
+            }
+        }
         await securityDevicesDbRepository.deleteAllOther(userId, deviceId)
-        return 0
     },
     async deleteSessionByDeviceId(deviceId: string, userId: ObjectId){
         const session = await securityDevicesDbRepository.getSessionsByDeviceId(deviceId)
-        if (!session) return 1
-        else if (session?.userId!=userId) return 0
+        if (!session) return 'notFound'
+        else if (session?.userId!=userId) return 'accessRejected'
         else {
             const deleted = await securityDevicesDbRepository.deleteSessionByDeviceId(deviceId)
-            if (deleted.deletedCount === 0) return 1
+            if (deleted.deletedCount === 0) return 'notFound'
             else {
                 await usersService.addToBlackListAnother(session.refreshToken, session.userId)
-                return 2
+                return 'successDelete'
             }
         }
     },
     async sessionUpdate(userId: ObjectId, deviceId: string, refreshToken: string){
         await securityDevicesDbRepository.sessionUpdate(userId, deviceId, refreshToken)
-        return 0
     }
 }
