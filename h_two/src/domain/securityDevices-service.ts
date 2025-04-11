@@ -35,6 +35,7 @@ export const securityDevicesService = {
         }
     },
     async sessionUpdate(userId: ObjectId, deviceId: string, refreshToken: string){
-        await securityDevicesDbRepository.sessionUpdate(userId, deviceId, refreshToken)
+        const date = new Date().toISOString()
+        await securityDevicesDbRepository.sessionUpdate(userId, deviceId, refreshToken, date)
     }
 }
