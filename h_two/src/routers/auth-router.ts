@@ -75,7 +75,6 @@ authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
         const newRefreshToken = await jwtService.createRefreshToken(verifiedToken.userId, verifiedToken.deviceId)
         await securityDevicesService.sessionUpdate(verifiedToken.userId, verifiedToken.deviceId, newRefreshToken.token)
         res.cookie('refreshToken', newRefreshToken.token, {httpOnly: true, secure: true})
-        res.cookie('deviceId', newRefreshToken.deviceId, {httpOnly: true, secure: true})
         res.status(200).send({accessToken: newToken})
     }
 })
