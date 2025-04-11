@@ -1,7 +1,5 @@
 import {refreshTokenCollection} from "../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
-import {refreshTokenDb} from "../db/refresh-Token-db";
-import {log} from "node:util";
 
 const sessionsMapper = async (value: Array<any>) => {
     const mappedSessions = value.map(session =>
@@ -37,8 +35,7 @@ export const securityDevicesDbRepository={
         const deleted = await refreshTokenCollection.deleteOne({deviceId: deviceId})
         return deleted
     },
-    async sessionUpdate(userId: ObjectId, deviceId: string, refreshToken: string){
-        const date = new Date().toISOString()
+    async sessionUpdate(userId: ObjectId, deviceId: string, refreshToken: string, date: string){
         await refreshTokenCollection.updateOne({userId: new ObjectId(userId), deviceId: deviceId}, {$set: {lastActiveDate: date, refreshToken: refreshToken}})
     }
 }
