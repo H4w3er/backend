@@ -1,9 +1,10 @@
 import {userCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from "uuid";
+import {UserViewType} from "../db/user-type-db";
 
 export const usersRepository = {
-    async createUser(newUser: any){
+    async createUser(newUser: any) {
         await userCollection.insertOne(newUser)
         return userMapper(newUser);
     },
@@ -26,12 +27,11 @@ export const usersRepository = {
         return user
     },
     async updateUserByCode(code: string){
-        const user = await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.isConfirmed': true}})
-        return true
+        await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.isConfirmed': true}})
     },
     async updateUserCodeByCode(code: string){
         const newCode = uuidv4()
-        const user = await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.confCode': newCode}})
+        await userCollection.updateOne({'emailConfirm.confCode': code}, {$set:{'emailConfirm.confCode': newCode}})
         return newCode
     },
     async addToBlackList(refreshToken: string, userId: string | ObjectId){
@@ -40,7 +40,7 @@ export const usersRepository = {
     }
 }
 
-const userMapper = (value: any)=> {
+const userMapper = (value: any): UserViewType=> {
     return {
         id: value._id,
         login: value.userName,
