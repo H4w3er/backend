@@ -7,27 +7,21 @@ export const jwtService = {
         const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '10 seconds'})
         return token
     },
-    async getIdByToken(token: string | undefined) {
+    async getIdFromToken(token: string) {
         try {
             const jwt = require('jsonwebtoken')
             const result = jwt.verify(token, SETTINGS.JWT_SECRET)
-            return result.userId
+            return result
         } catch (error) {
-            return null
+            return {
+                userId: null,
+                deviceId: null
+            }
         }
     },
-    async getDeviceIdByToken(token: string | undefined){
-        try {
-            const jwt = require('jsonwebtoken')
-            const result = jwt.verify(token, SETTINGS.JWT_SECRET)
-            return result.deviceId
-        } catch (error) {
-            return null
-        }
-    },
-    async createRefreshToken(id: ObjectId, acceptedDeviceId?: string | string[] | undefined) {
+    async createRefreshToken(id: ObjectId, acceptedDeviceId: string | null) {
         const jwt = require('jsonwebtoken')
-        if (acceptedDeviceId!=undefined) {
+        if (acceptedDeviceId!=null) {
             acceptedDeviceId = acceptedDeviceId.toString()
             const token = jwt.sign({userId: id, deviceId: acceptedDeviceId}, SETTINGS.JWT_SECRET, {expiresIn: '20 seconds'})
             return {
