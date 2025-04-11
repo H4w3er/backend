@@ -9,6 +9,7 @@ import {inputValidationMiddleware} from "../middlewares/input-validation-middlew
 import {authRefreshMiddleware} from "../middlewares/authRefreshMiddleware";
 import {securityDevicesService} from "../domain/securityDevices-service";
 import {CRLChecking} from "../middlewares/CRL-cheking";
+import {UserViewType} from "../db/user-type-db";
 
 export const authRouter = Router({})
 
@@ -16,22 +17,18 @@ authRouter.post('/login', CRLChecking, async (req,res) =>{
     const checkUser = await usersService.checkCredentials(req.body.loginOrEmail, req.body.password)
     if (checkUser){
         const token = await jwtService.createJWT(checkUser._id)
-        const refreshToken = await jwtService.createRefreshToken(checkUser._id)
+        const refreshToken = await jwtService.createRefreshToken(checkUser._id, null)
         const ip =  req.headers['x-forwarded-for'] as string
-        const title =  req.headers['user-agent'] ?? null
+        const title =  req.headers['user-agent'] as string
+        await securityDevicesService.addNewSession(ip, title, refreshToken.deviceId.toString(), checkUser._id, refreshToken.token)
 
-        await securityDevicesService.addNewSession(ip,title, new Date().toISOString(), refreshToken.deviceId.toString(), new Date(), new Date(new Date().setSeconds(new Date().getSeconds() + 20)), checkUser._id, refreshToken.token)
         res.cookie('refreshToken', refreshToken.token, {httpOnly: true, secure: true})
-        res.cookie('deviceId', refreshToken.deviceId, {httpOnly: true, secure: true})
         res.status(200).send({accessToken: token})
     } else {
         res.sendStatus(401)
     }
 })
-// типизация как показали
-// лишние рутурны убрать
-// перенести часть логики в сервис
-// пофиксить delete ендпоинт
+
 authRouter.get('/me', authBearerMiddleware, async (req, res) =>{
     const thisUser = {
         "email": req.user!.email,
@@ -50,22 +47,12 @@ authRouter.post('/registration-email-resending', CRLChecking, emailValidation, i
             }]})
 })
 authRouter.post('/registration', CRLChecking, loginValidation, emailValidation, passwordValidation, inputValidationMiddleware, async (req, res) =>{
-    const newUser = await authService.createUser(req.body.login, req.body.password, req.body.email)
-    if(newUser === 1) {
-        res.status(400).send({"errorsMessages": [
-                {
-                    "message": "the login is not unique",
-                    "field": "login"
-                }]})
-    }
-    else if(newUser == 2){
-        res.status(400).send({"errorsMessages":[
-                {
-                    "message": "the email address is not unique",
-                    "field": "email"
-                }]})
-    } else{
+    const newUser: UserViewType | Object = await authService.createUser(req.body.login, req.body.password, req.body.email)
+    if('id' in newUser) {
         res.sendStatus(204)
+    }
+    else{
+        res.status(400).send(newUser)
     }
 })
 authRouter.post('/registration-confirmation', CRLChecking, async (req, res) =>{
@@ -79,15 +66,14 @@ authRouter.post('/registration-confirmation', CRLChecking, async (req, res) =>{
 })
 authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
     const refreshToken = req.cookies.refreshToken;
-    const userId = await jwtService.getIdByToken(refreshToken)
-    const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
-    if (!userId) {
+    const verifiedToken = await jwtService.getIdFromToken(refreshToken)
+    if (!verifiedToken) {
         res.sendStatus(401)
     } else {
-        await usersService.addToBlackList(refreshToken, userId)
-        const newToken = await jwtService.createJWT(userId)
-        const newRefreshToken = await jwtService.createRefreshToken(userId, req.cookies.deviceId)
-        await securityDevicesService.sessionUpdate(userId, deviceId, newRefreshToken.token)
+        await usersService.addToBlackList(refreshToken, verifiedToken.userId)
+        const newToken = await jwtService.createJWT(verifiedToken.userId)
+        const newRefreshToken = await jwtService.createRefreshToken(verifiedToken.userId, verifiedToken.deviceId)
+        await securityDevicesService.sessionUpdate(verifiedToken.userId, verifiedToken.deviceId, newRefreshToken.token)
         res.cookie('refreshToken', newRefreshToken.token, {httpOnly: true, secure: true})
         res.cookie('deviceId', newRefreshToken.deviceId, {httpOnly: true, secure: true})
         res.status(200).send({accessToken: newToken})
@@ -95,13 +81,12 @@ authRouter.post('/refresh-token', authRefreshMiddleware, async (req, res) =>{
 })
 authRouter.post('/logout', authRefreshMiddleware, async(req, res)=>{
     const refreshToken = req.cookies.refreshToken;
-    const userId = await jwtService.getIdByToken(refreshToken)
-    const deviceId = await jwtService.getDeviceIdByToken(refreshToken)
-    if (!userId) {
+    const verifiedToken = await jwtService.getIdFromToken(refreshToken)
+    if (!verifiedToken.userId) {
         res.sendStatus(401)
     } else {
-        await usersService.addToBlackList(refreshToken, userId)
-        await securityDevicesService.deleteSessionByDeviceId(deviceId, userId)
+        await usersService.addToBlackList(refreshToken, verifiedToken.userId)
+        await securityDevicesService.deleteSessionByDeviceId(verifiedToken.deviceId, verifiedToken.userId)
         res.sendStatus(204)
     }
 })
