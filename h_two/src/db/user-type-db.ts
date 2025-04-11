@@ -27,3 +27,9 @@ export type UserDbTypeCommon = {
     }
     "refreshTokenBlackList": Array<string>
 }
+export type UserViewType = {
+    id: ObjectId
+    login: string
+    email: string
+    createdAt: string,
+}
