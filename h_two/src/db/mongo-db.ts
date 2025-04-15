@@ -2,7 +2,7 @@ import {SETTINGS} from "../settings";
 import {Collection, Db, MongoClient} from "mongodb";
 import {BlogDbType} from "./blogs-type-db";
 import {PostDbType} from "./posts-type-db";
-import {UserDbType, UserDbTypeCommon} from "./user-type-db";
+import {UserDbTypeCommon} from "./user-type-db";
 import {CommentsDbType} from "./comments-type-db";
 import {refreshTokenDb} from "./refresh-Token-db";
 import {requestsToApi} from "./requests-to-api-type-db";
