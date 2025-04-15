@@ -1,6 +1,5 @@
 import {commentsRepository} from "../repositories/comments-db-repository";
 import {ObjectId} from "mongodb";
-import {CommentsDbType} from "../db/comments-type-db";
 
 export const commentsService = {
     async createComment(postId: string, content: string, userId: ObjectId, login: string){
