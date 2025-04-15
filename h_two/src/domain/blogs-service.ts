@@ -1,5 +1,4 @@
 import {blogsRepository} from "../repositories/blogs-db-repository";
-import {postsRepository} from "../repositories/posts-db-repository";
 import {postsService} from "./posts-service";
 import {postQueryRepository} from "../repositories/posts-db-query-repository";
 
