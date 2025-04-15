@@ -22,7 +22,6 @@ const userFilter = async (sortBy: string = 'createdAt', sortDirection: any = 'de
     }
     if (sortBy === 'login') sortBy = 'userName'
     try {
-        // собственно запрос в бд (может быть вынесено во вспомогательный метод)
         const items = await userCollection
             .find(filter)
             .sort(sortBy, sortDirection)
@@ -31,7 +30,6 @@ const userFilter = async (sortBy: string = 'createdAt', sortDirection: any = 'de
             .toArray() as any[]
         const totalCount = await userCollection.countDocuments(filter)
 
-        // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
             page: Number(pageNumber),
@@ -47,7 +45,9 @@ const userFilter = async (sortBy: string = 'createdAt', sortDirection: any = 'de
 
 
 export const usersQueryRepository = {
-    async getUsers(sortBy: string, sortDirection: string, pageNumber: number, pageSize: number, searchLoginTerm: string, searchEmailTerm: string){
-        return userFilter(sortBy, sortDirection, pageNumber, pageSize, searchLoginTerm, searchEmailTerm)
+    async getUsers(sortBy: string, sortDirection: string, pageNumber: string, pageSize: string, searchLoginTerm: string, searchEmailTerm: string){
+        const pageNumberNum : number = +pageNumber
+        const pageSizeNum : number = +pageSize
+        return userFilter(sortBy, sortDirection, pageNumberNum, pageSizeNum, searchLoginTerm, searchEmailTerm)
     }
 }
