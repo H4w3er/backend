@@ -11,7 +11,6 @@ class UsersDbQueryRepository {
             };
         } else return null
     }
-
     async userFilter(sortBy: string = 'createdAt', sortDirection: any = 'desc', pageNumber: number = 1, pageSize: number = 10, searchLoginTerm: string, searchEmailTerm: string) {
         const byLogin = searchLoginTerm
             ? {userName: {$regex: searchLoginTerm, $options: "i"}}
@@ -43,7 +42,6 @@ class UsersDbQueryRepository {
             return {error: 'some error'}
         }
     }
-
     async getUsers(sortBy: string, sortDirection: string, pageNumber: string, pageSize: string, searchLoginTerm: string, searchEmailTerm: string) {
         const pageNumberNum: number = +pageNumber || 1
         const pageSizeNum: number = +pageSize || 10
