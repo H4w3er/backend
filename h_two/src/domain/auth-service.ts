@@ -25,19 +25,19 @@ export const authService = {
         }
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this.createHash(password, passwordSalt)
-        const newUser:UserDbTypeCommon = {
-            _id: new ObjectId(),
-            userName: login,
-            email: email,
-            passwordHash: passwordHash,
-            passwordSalt: passwordSalt,
-            createdAt: new Date().toISOString(),
-            emailConfirm:{
+        const newUser = new UserDbTypeCommon(
+            new ObjectId(),
+            login,
+            email,
+            passwordHash,
+            passwordSalt,
+            new Date().toISOString(),
+            {
                 confCode: uuidv4(),
                 isConfirmed: false
             },
-            refreshTokenBlackList: []
-        }
+            []
+    )
         await emailAdapter.sendEmail(email, newUser.emailConfirm.confCode)
         return usersRepository.createUser(newUser)
     },
