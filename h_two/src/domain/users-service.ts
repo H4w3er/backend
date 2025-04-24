@@ -24,19 +24,19 @@ class UsersService{
         }
         const passwordSalt = await bcrypt.genSalt(10)
         const passwordHash = await this.createHash(password, passwordSalt)
-        const newUser:UserDbTypeCommon = {
-            _id: new ObjectId(),
-            userName: login,
+        const newUser = new UserDbTypeCommon(
+            new ObjectId(),
+            login,
             email,
             passwordHash,
             passwordSalt,
-            createdAt: new Date().toISOString(),
-            emailConfirm:{
+            new Date().toISOString(),
+            {
                 confCode: '1',
                 isConfirmed: true
             },
-            refreshTokenBlackList: []
-        }
+            []
+    )
         return usersRepository.createUser(newUser)
     }
     async deleteUser(id: string): Promise<boolean> {
