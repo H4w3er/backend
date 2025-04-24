@@ -1,9 +1,8 @@
-import {blogsRepository} from "../repositories/blogs-db-repository";
+import {blogsDbRepository} from "../repositories/blogs-db-repository";
 import {postsService} from "./posts-service";
 import {postQueryRepository} from "../repositories/posts-db-query-repository";
 
-
-export const blogsService = {
+class BlogsService{
     async createBlog(name: string, description: string, websiteUrl: string){
         const newBlog = {
             name: name,
@@ -12,22 +11,24 @@ export const blogsService = {
             createdAt: new Date().toISOString(),
             isMembership: false
         }
-        return blogsRepository.createBlog(newBlog)
-    },
+        return blogsDbRepository.createBlog(newBlog)
+    }
     async updateBlog(id: string, name: string, description: string, websiteUrl: string): Promise<boolean>{
-        return blogsRepository.updateBlog(id, name, description, websiteUrl)
-    },
+        return blogsDbRepository.updateBlog(id, name, description, websiteUrl)
+    }
     async deleteBlog(id: string): Promise<boolean>{
-        return blogsRepository.deleteBlog(id)
-    },
+        return blogsDbRepository.deleteBlog(id)
+    }
     async deleteAll(): Promise<boolean>{
-        return blogsRepository.deleteAll()
-    },
+        return blogsDbRepository.deleteAll()
+    }
     async isBlog(blogId: string): Promise<boolean>{
-        return blogsRepository.isBlog(blogId)
-    },
+        return blogsDbRepository.isBlog(blogId)
+    }
     async createPostForBlog(id: string, title: string, shortDescription: string, content: string){
         const newPostId = await postsService.createPost(title, shortDescription, content, id);
         return postQueryRepository.findPostById(newPostId.toString())
     }
 }
+
+export const blogsService = new BlogsService
