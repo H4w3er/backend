@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
 import {blogCollection} from "../db/mongo-db";
 
-class BlogsDbQueryRepository {
+export class BlogsDbQueryRepository {
     async blogMapper  (value: any)  {
         if (value) {
             return {
@@ -56,5 +56,3 @@ class BlogsDbQueryRepository {
         return blog.name;
     }
 }
-
-export const blogQueryRepository = new BlogsDbQueryRepository()
