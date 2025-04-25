@@ -1,8 +1,12 @@
 import nodemailer from "nodemailer";
 import {SETTINGS} from "../settings";
-import {usersRepository} from "../repositories/users-db-repository";
+import {UsersDbRepository} from "../repositories/users-db-repository";
 
-export const emailAdapter = {
+export class EmailAdapter {
+    usersDbRepository: UsersDbRepository
+    constructor() {
+        this.usersDbRepository = new UsersDbRepository()
+    }
     async sendEmail(email: string, code: string) {
         const transporter = nodemailer.createTransport({
             host: 'smtp.mail.ru',
@@ -19,12 +23,11 @@ export const emailAdapter = {
             subject: 'Account creation',
             text: `https://somesite.com/confirm-email?code=${code}`
         });
-    },
+    }
     async checkCode(code: string){
-        const user = await usersRepository.findUserByCode(code)
-        //console.log(user)
+        const user = await this.usersDbRepository.findUserByCode(code)
         if (user?.emailConfirm.isConfirmed === false) {
-            await usersRepository.updateUserByCode(code)
+            await this.usersDbRepository.updateUserByCode(code)
             return true
         } else return false
     }
