@@ -1,5 +1,7 @@
 import {body, param} from "express-validator";
-import {blogsService} from "../domain/blogs-service";
+import {BlogsService} from "../domain/blogs-service";
+
+const blogsService = new BlogsService()
 
 export const nameValidation = body('name').trim().isLength({min:1, max:15}).withMessage("Name should be more than 1 and less than 15");
 export const descriptionValidation = body('description').isLength({min:1, max:500}).withMessage("Description should be more than 1 and less than 500");
