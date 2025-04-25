@@ -7,7 +7,7 @@ import {
 } from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 
-class BlogsDbRepository {
+export class BlogsDbRepository {
     async createBlog(newBlog: any) {
         const idOfNewBlog = await blogCollection.insertOne(newBlog)
         return idOfNewBlog.insertedId;
@@ -47,5 +47,3 @@ class BlogsDbRepository {
         return result === 1;
     }
 }
-
-export const blogsDbRepository = new BlogsDbRepository()
