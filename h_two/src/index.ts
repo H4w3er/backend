@@ -3,7 +3,7 @@ import {blogsRouter} from "./routers/blogs-router";
 import {postsRouter} from "./routers/posts-router";
 import {SETTINGS} from "./settings";
 import {runDb} from "./db/mongo-db";
-import {blogsService} from "./domain/blogs-service";
+import {BlogsService} from "./domain/blogs-service";
 import {usersRouter} from "./routers/users-router";
 import {authRouter} from "./routers/auth-router";
 import {commentsRouter} from "./routers/comments-router";
@@ -11,6 +11,7 @@ import cookieParser from "cookie-parser";
 import {securityDevicesRouter} from "./routers/securityDevices-router";
 
 export const app = express()
+const blogsService = new BlogsService()
 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware)
