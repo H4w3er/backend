@@ -1,12 +1,12 @@
 import {SETTINGS} from "../settings";
 import {ObjectId} from "mongodb";
 
-export const jwtService = {
+export class JwtService {
     async createJWT(id: ObjectId) {
         const jwt = require('jsonwebtoken')
         const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '10 seconds'})
         return token
-    },
+    }
     async getIdFromToken(token: string) {
         try {
             const jwt = require('jsonwebtoken')
@@ -18,7 +18,7 @@ export const jwtService = {
                 deviceId: null
             }
         }
-    },
+    }
     async createRefreshToken(id: ObjectId, acceptedDeviceId: string | null) {
         const jwt = require('jsonwebtoken')
         if (acceptedDeviceId!=null) {
