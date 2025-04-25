@@ -1,7 +1,11 @@
-import {commentsRepository} from "../repositories/comments-db-repository";
+import {CommentsDbRepository} from "../repositories/comments-db-repository";
 import {ObjectId} from "mongodb";
 
-export const commentsService = {
+export class CommentsService {
+    commentsDbRepository: CommentsDbRepository
+    constructor() {
+        this.commentsDbRepository = new CommentsDbRepository()
+    }
     async createComment(postId: string, content: string, userId: ObjectId, login: string){
         const newComment = {
             content: content,
@@ -12,26 +16,26 @@ export const commentsService = {
             createdAt: new Date().toISOString(),
             postId: new ObjectId(postId)
         }
-        return commentsRepository.createComment(newComment)
-    },
+        return this.commentsDbRepository.createComment(newComment)
+    }
     async getCommentById(commentId: string){
-        return commentsRepository.getCommentById(commentId)
-    },
+        return this.commentsDbRepository.getCommentById(commentId)
+    }
     async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber:any, pageSize:any){
-        return await commentsRepository.getCommentForPost(postId, sortBy, sortDirection, pageNumber, pageSize)
-    },
+        return await this.commentsDbRepository.getCommentForPost(postId, sortBy, sortDirection, pageNumber, pageSize)
+    }
     async updateCommentById(commentId: string, newContent:string, userId: ObjectId){
-        const oldComment = await commentsRepository.getCommentById(commentId)
+        const oldComment = await this.commentsDbRepository.getCommentById(commentId)
         if (!oldComment) return null;
         if (userId.toString() !== oldComment.commentatorInfo.userId) return 1;
-        const newComment = await commentsRepository.updateCommentById(commentId, newContent)
+        const newComment = await this.commentsDbRepository.updateCommentById(commentId, newContent)
         return newComment;
-    },
+    }
     async deleteCommentById(commentId: string, userId: ObjectId){
-        const oldComment = await commentsRepository.getCommentById(commentId)
+        const oldComment = await this.commentsDbRepository.getCommentById(commentId)
         if (!oldComment) return null;
         if (userId.toString() !== oldComment.commentatorInfo.userId) return 1;
-        const newComment = await commentsRepository.deleteCommentById(commentId)
+        const newComment = await this.commentsDbRepository.deleteCommentById(commentId)
         return newComment;
-    },
+    }
 }
