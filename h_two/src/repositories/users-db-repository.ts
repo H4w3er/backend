@@ -3,9 +3,7 @@ import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from "uuid";
 import {UserViewType} from "../db/user-type-db";
 
-
-
-class UsersDbRepository {
+export class UsersDbRepository {
     async createUser(newUser: any) {
         await userCollection.insertOne(newUser)
         return await this.userMapper(newUser);
@@ -58,6 +56,3 @@ class UsersDbRepository {
         return user
     }
 }
-
-export const usersRepository = new UsersDbRepository()
-
