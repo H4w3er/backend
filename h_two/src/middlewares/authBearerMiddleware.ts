@@ -1,6 +1,9 @@
 import {NextFunction, Request, Response} from "express";
-import {jwtService} from "../application/jwt-service";
-import {usersService} from "../domain/users-service";
+import {JwtService} from "../application/jwt-service";
+import {UsersService} from "../domain/users-service";
+
+const usersService = new UsersService()
+const jwtService = new JwtService()
 
 export const authBearerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const auth = req.headers.authorization as string
