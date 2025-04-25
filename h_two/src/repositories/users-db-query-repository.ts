@@ -1,6 +1,6 @@
 import {userCollection} from "../db/mongo-db";
 
-class UsersDbQueryRepository {
+export class UsersDbQueryRepository {
     userMapper(value: any) {
         if (value) {
             return {
@@ -48,5 +48,3 @@ class UsersDbQueryRepository {
         return this.userFilter(sortBy, sortDirection, pageNumberNum, pageSizeNum, searchLoginTerm, searchEmailTerm)
     }
 }
-
-export const usersQueryRepository = new UsersDbQueryRepository()
