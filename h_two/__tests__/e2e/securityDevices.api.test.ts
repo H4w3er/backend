@@ -1,10 +1,11 @@
 import request from "supertest";
 import {app} from "../../src";
-import {jwtService} from "../../src/application/jwt-service";
+import {JwtService} from "../../src/application/jwt-service";
 
 describe('Security devices tests', () => {
     beforeAll(async ()=>{
         await request(app).delete('/testing/all-data')
+        const jwtService = new JwtService()
     })
 
     it('should create two users', async () => {
