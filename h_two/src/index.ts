@@ -9,9 +9,10 @@ import {authRouter} from "./routers/auth-router";
 import {commentsRouter} from "./routers/comments-router";
 import cookieParser from "cookie-parser";
 import {securityDevicesRouter} from "./routers/securityDevices-router";
+import {container} from "./composition-root";
 
 export const app = express()
-const blogsService = new BlogsService()
+const blogsService = container.get(BlogsService)
 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware)
