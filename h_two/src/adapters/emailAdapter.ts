@@ -1,12 +1,12 @@
 import nodemailer from "nodemailer";
 import {SETTINGS} from "../settings";
 import {UsersDbRepository} from "../repositories/users-db-repository";
+import {injectable} from "inversify";
 
+@injectable()
 export class EmailAdapter {
-    usersDbRepository: UsersDbRepository
-    constructor() {
-        this.usersDbRepository = new UsersDbRepository()
-    }
+    constructor(protected usersDbRepository: UsersDbRepository) {}
+
     async sendEmail(email: string, code: string) {
         const transporter = nodemailer.createTransport({
             host: 'smtp.mail.ru',
