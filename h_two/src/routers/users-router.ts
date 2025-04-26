@@ -8,7 +8,7 @@ import {inputValidationMiddleware} from "../middlewares/input-validation-middlew
 
 export const usersRouter = Router({})
 
-class UsersController {
+export class UsersController {
     usersService: UsersService
     usersDbQueryRepository: UsersDbQueryRepository
     constructor() {
