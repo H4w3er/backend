@@ -1,11 +1,11 @@
 import {CommentsDbRepository} from "../repositories/comments-db-repository";
 import {ObjectId} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentsService {
-    commentsDbRepository: CommentsDbRepository
-    constructor() {
-        this.commentsDbRepository = new CommentsDbRepository()
-    }
+    constructor(protected commentsDbRepository: CommentsDbRepository) {}
+
     async createComment(postId: string, content: string, userId: ObjectId, login: string){
         const newComment = {
             content: content,

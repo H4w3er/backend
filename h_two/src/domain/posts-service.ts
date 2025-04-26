@@ -1,16 +1,14 @@
 import {PostsDbRepository} from "../repositories/posts-db-repository";
 import {BlogsDbQueryRepository} from "../repositories/blogs-db-query-repository";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class PostsService {
-    postsDbRepository: PostsDbRepository
-    blogsDbQueryRepository: BlogsDbQueryRepository
-    constructor() {
-        this.postsDbRepository = new PostsDbRepository()
-        this.blogsDbQueryRepository = new BlogsDbQueryRepository()
-    }
+    constructor(protected postsDbRepository: PostsDbRepository,
+                protected blogsDbQueryRepository: BlogsDbQueryRepository) {}
+
     async createPost(title: string, shortDescription: string, content: string, blogId: string) {
-        const newPost ={
+        const newPost = {
             title: title,
             shortDescription: shortDescription,
             content: content,
@@ -20,9 +18,11 @@ export class PostsService {
         }
         return this.postsDbRepository.createPost(newPost)
     }
+
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean> {
         return this.postsDbRepository.updatePost(id, title, shortDescription, content, blogId)
     }
+
     async deletePost(id: string): Promise<boolean> {
         return this.postsDbRepository.deletePost(id)
     }

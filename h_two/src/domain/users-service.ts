@@ -2,12 +2,11 @@ import {UsersDbRepository} from "../repositories/users-db-repository";
 import {UserDbTypeCommon} from "../db/user-type-db";
 import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt'
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersService{
-    usersDbRepository: UsersDbRepository
-    constructor() {
-        this.usersDbRepository = new UsersDbRepository()
-    }
+    constructor(protected usersDbRepository: UsersDbRepository) {}
     async createUser(login: string, password: string, email: string) {
         if (await this.usersDbRepository.findByLoginOrEmail(login)){
             const error: object = {"errorsMessages": [

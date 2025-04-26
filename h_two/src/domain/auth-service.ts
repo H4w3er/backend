@@ -4,14 +4,13 @@ import {ObjectId} from "mongodb";
 import bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid';
 import {EmailAdapter} from "../adapters/emailAdapter";
+import {injectable} from "inversify";
 
+@injectable()
 export class AuthService {
-    usersDbRepository: UsersDbRepository
-    emailAdapter: EmailAdapter
-    constructor() {
-        this.usersDbRepository = new UsersDbRepository()
-        this.emailAdapter = new EmailAdapter()
-    }
+    constructor(protected usersDbRepository: UsersDbRepository,
+                protected emailAdapter: EmailAdapter) {    }
+
     async createUser(login: string, password: string, email: string) {
         if (await this.usersDbRepository.findByLoginOrEmail(login)){
             const error: object = {"errorsMessages": [

@@ -1,13 +1,12 @@
 import {SecurityDevicesDbRepository} from "../repositories/securityDevices-db-repository";
 import {ObjectId} from "mongodb";
 import {UsersService} from "./users-service";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityDevicesService {
-    securityDevicesDbRepository: SecurityDevicesDbRepository
-    usersService: UsersService
-    constructor() {
-        this.securityDevicesDbRepository = new SecurityDevicesDbRepository()
-        this.usersService = new UsersService()
+    constructor(protected securityDevicesDbRepository: SecurityDevicesDbRepository,
+                protected usersService: UsersService) {
     }
 
     async getActiveSessions(userId: ObjectId){

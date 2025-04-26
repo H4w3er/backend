@@ -1,14 +1,12 @@
 import {BlogsDbRepository} from "../repositories/blogs-db-repository";
 import {PostsService} from "./posts-service";
 import {PostsDbQueryRepository} from "../repositories/posts-db-query-repository";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsService{
-    postsDbQueryRepository: PostsDbQueryRepository
-    postsService: PostsService
-    //blogsDbRepository: BlogsDbRepository
-    constructor(protected blogsDbRepository: BlogsDbRepository) {
-        this.postsDbQueryRepository = new PostsDbQueryRepository()
-        this.postsService = new PostsService()
+    constructor(protected blogsDbRepository: BlogsDbRepository, protected postsDbQueryRepository: PostsDbQueryRepository, protected postsService: PostsService) {
+
     }
 
     async createBlog(name: string, description: string, websiteUrl: string){
