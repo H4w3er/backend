@@ -1,6 +1,8 @@
 import {SETTINGS} from "../settings";
 import {ObjectId} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class JwtService {
     async createJWT(id: ObjectId) {
         const jwt = require('jsonwebtoken')
