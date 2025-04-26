@@ -6,7 +6,9 @@ import {
     userCollection
 } from "../db/mongo-db";
 import {ObjectId} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsDbRepository {
     async createBlog(newBlog: any) {
         const idOfNewBlog = await blogCollection.insertOne(newBlog)

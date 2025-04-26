@@ -1,8 +1,11 @@
 import {commentsCollection} from "../db/mongo-db";
 import {CommentsDbType} from "../db/comments-type-db";
 import {ObjectId} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentsDbRepository{
+
     async commentMapper (comment: CommentsDbType | null){
         if (comment) {
             return {

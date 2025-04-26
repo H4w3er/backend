@@ -1,6 +1,8 @@
 import {refreshTokenCollection} from "../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityDevicesDbRepository{
     async sessionsMapper (value: Array<any>){
         const mappedSessions = value.map(session =>

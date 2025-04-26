@@ -1,5 +1,8 @@
 import {userCollection} from "../db/mongo-db";
+import {injectable} from "inversify";
 
+
+@injectable()
 export class UsersDbQueryRepository {
     userMapper(value: any) {
         if (value) {

@@ -1,6 +1,8 @@
 import {postCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsDbRepository {
     async createPost(post: any){
         const newPostId = await postCollection.insertOne(post)

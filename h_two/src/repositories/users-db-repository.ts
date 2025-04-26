@@ -2,7 +2,9 @@ import {userCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from "uuid";
 import {UserViewType} from "../db/user-type-db";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersDbRepository {
     async createUser(newUser: any) {
         await userCollection.insertOne(newUser)

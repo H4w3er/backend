@@ -1,6 +1,8 @@
 import {ObjectId} from "mongodb";
 import {blogCollection} from "../db/mongo-db";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsDbQueryRepository {
     async blogMapper  (value: any)  {
         if (value) {

@@ -1,7 +1,9 @@
 import {postCollection} from "../db/mongo-db";
 import {PostDbType} from "../db/posts-type-db";
 import {ObjectId} from "mongodb";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostsDbQueryRepository {
     async postMapper (value: any) {
         if (value) {
