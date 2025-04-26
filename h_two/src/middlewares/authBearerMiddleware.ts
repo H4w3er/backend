@@ -1,9 +1,10 @@
 import {NextFunction, Request, Response} from "express";
 import {JwtService} from "../application/jwt-service";
 import {UsersService} from "../domain/users-service";
+import {container} from "../composition-root";
 
-const usersService = new UsersService()
-const jwtService = new JwtService()
+const usersService = container.get(UsersService)
+const jwtService = container.get(JwtService)
 
 export const authBearerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const auth = req.headers.authorization as string
