@@ -3,9 +3,12 @@ import {inputValidationMiddleware} from "../middlewares/input-validation-middlew
 import {authMiddleware} from "../middlewares/authMiddleware";
 import {descriptionValidation, nameValidation, websiteUrlValidation,} from "../middlewares/blogs-validation"
 import {contentValidation, shortDescriptionValidation, titleValidation} from "../middlewares/posts-validation";
-import {blogsController} from "../composition-root";
+import {container} from "../composition-root";
+import {BlogsController} from "./blogs-controller";
 
 export const blogsRouter = Router({})
+
+const blogsController = container.get(BlogsController)
 
 blogsRouter.get('/', blogsController.getBlogs.bind(blogsController))
 

@@ -2,22 +2,20 @@ import {BlogsDbQueryRepository} from "../repositories/blogs-db-query-repository"
 import {PostsDbQueryRepository} from "../repositories/posts-db-query-repository";
 import {BlogsService} from "../domain/blogs-service";
 import {Request, Response} from "express";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsController {
-    blogsDbQueryRepository: BlogsDbQueryRepository
-    postsDbQueryRepository: PostsDbQueryRepository
-
-    constructor(protected blogsService: BlogsService) {
-        this.blogsDbQueryRepository = new BlogsDbQueryRepository()
-        this.postsDbQueryRepository = new PostsDbQueryRepository()
-    }
+    constructor(protected blogsService: BlogsService,
+                protected postsDbQueryRepository: PostsDbQueryRepository,
+                protected blogsDbQueryRepository: BlogsDbQueryRepository) {}
 
     async getBlogs(req: Request, res: Response) {
         const id = req.query.id as string
         const searchNameTerm = req.query.searchNameTerm as string
         const sortBy = req.query.sortBy as string
         // @ts-ignore
-        const foundBlog = await blogQueryRepository.findBlogs(id, searchNameTerm, sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
+        const foundBlog = await this.blogsDbQueryRepository.findBlogs(id, searchNameTerm, sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
         res.send(foundBlog);
     }
 
