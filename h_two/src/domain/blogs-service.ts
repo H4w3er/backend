@@ -5,11 +5,10 @@ import {PostsDbQueryRepository} from "../repositories/posts-db-query-repository"
 export class BlogsService{
     postsDbQueryRepository: PostsDbQueryRepository
     postsService: PostsService
-    blogsDbRepository: BlogsDbRepository
-    constructor() {
+    //blogsDbRepository: BlogsDbRepository
+    constructor(protected blogsDbRepository: BlogsDbRepository) {
         this.postsDbQueryRepository = new PostsDbQueryRepository()
         this.postsService = new PostsService()
-        this.blogsDbRepository = new BlogsDbRepository()
     }
 
     async createBlog(name: string, description: string, websiteUrl: string){
