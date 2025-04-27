@@ -1,6 +1,11 @@
 import {Router} from "express";
 import {authBearerMiddleware} from "../middlewares/authBearerMiddleware";
-import {emailValidation, loginValidation, passwordValidation} from "../middlewares/auth-validation";
+import {
+    emailValidation,
+    loginValidation,
+    newPasswordValidation,
+    passwordValidation
+} from "../middlewares/auth-validation";
 import {inputValidationMiddleware} from "../middlewares/input-validation-middleware";
 import {authRefreshMiddleware} from "../middlewares/authRefreshMiddleware";
 import {CRLChecking} from "../middlewares/CRL-cheking";
@@ -24,3 +29,7 @@ authRouter.post('/registration-confirmation', CRLChecking, authController.regist
 authRouter.post('/refresh-token', authRefreshMiddleware, authController.refreshToken.bind(authController))
 
 authRouter.post('/logout', authRefreshMiddleware, authController.logout.bind(authController))
+
+authRouter.post('/password-recovery', CRLChecking, emailValidation, inputValidationMiddleware, authController.passwordRecovery.bind(authController))
+
+authRouter.post('/new-password', CRLChecking, newPasswordValidation, inputValidationMiddleware, authController.updatePassword.bind(authController))
