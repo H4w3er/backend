@@ -12,4 +12,5 @@ export const emailValidation = body('email').custom(value => {
     return true
 }).withMessage("Wrong email")
 export const passwordValidation = body('password').isLength({min:6, max:20}).withMessage("Password should be more than 6 and less than 20");
+export const newPasswordValidation = body('newPassword').isLength({min:6, max:20}).withMessage("Password should be more than 6 and less than 20");
 
