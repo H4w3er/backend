@@ -60,4 +60,27 @@ export class AuthService {
         await this.emailAdapter.sendEmail(email, newCode)
         return true
     }
+    async sendConfirmationLetterForPasswordRecovery(email: string){
+        const user = await this.usersDbRepository.findByLoginOrEmail(email)
+        let newCode = ''
+        try {
+            //@ts-ignore
+            newCode = await this.usersDbRepository.updateUserCodeByCode(user.emailConfirm.confCode)
+        } catch(error) {
+            return null
+        }
+        await this.emailAdapter.sendEmailToRecover(email, newCode)
+        return true
+    }
+    async updatePasswordAndCheckCode(newPassword: string, recoveryCode: string){
+        const user = await this.usersDbRepository.findUserByCode(recoveryCode)
+        if (!user){
+            return null
+        } else {
+            const passwordSalt = await bcrypt.genSalt(10)
+            const passwordHash = await this.createHash(newPassword, passwordSalt)
+            await this.usersDbRepository.updateUserPasswordByCode(recoveryCode, passwordHash, passwordSalt)
+            return true
+        }
+    }
 }
