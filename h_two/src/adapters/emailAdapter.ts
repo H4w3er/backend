@@ -31,4 +31,21 @@ export class EmailAdapter {
             return true
         } else return false
     }
+    async sendEmailToRecover(email: string, code: string) {
+        const transporter = nodemailer.createTransport({
+            host: 'smtp.mail.ru',
+            port: 465,
+            secure: true,
+            auth: {
+                user: "mr.gavrik378@list.ru",
+                pass: SETTINGS.EMAIL_PASS,
+            },
+        });
+        const info = await transporter.sendMail({
+            from: '"Artem"<mr.gavrik378@list.ru>',
+            to: email,
+            subject: 'Password recovery',
+            text: `https://somesite.com/password-recovery?recoveryCode=${code}`
+        });
+    }
 }
