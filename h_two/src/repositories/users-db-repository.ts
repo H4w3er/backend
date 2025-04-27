@@ -37,6 +37,10 @@ export class UsersDbRepository {
         await userCollection.updateOne({'emailConfirm.confCode': code}, {$set: {'emailConfirm.isConfirmed': true}})
     }
 
+    async updateUserPasswordByCode(recoveryCode: string, passwordHash: string, passwordSalt: string) {
+        await userCollection.updateOne({'emailConfirm.confCode': recoveryCode}, {$set: {passwordHash: passwordHash, passwordSalt: passwordSalt}})
+    }
+
     async updateUserCodeByCode(code: string) {
         const newCode = uuidv4()
         await userCollection.updateOne({'emailConfirm.confCode': code}, {$set: {'emailConfirm.confCode': newCode}})
