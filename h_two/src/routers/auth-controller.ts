@@ -99,4 +99,21 @@ export class AuthController {
             res.sendStatus(204)
         }
     }
+
+    async passwordRecovery(req: Request, res:Response){
+        const email = req.body.email;
+        await this.authService.sendConfirmationLetterForPasswordRecovery(email)
+        res.sendStatus(204)
+    }
+
+    async updatePassword(req: Request, res:Response) {
+        const recoveryCode = req.body.recoveryCode;
+        const newPassword = req.body.newPassword;
+        const response = await this.authService.updatePasswordAndCheckCode(newPassword, recoveryCode)
+        if (!response){
+            res.status(400).send({ errorsMessages: [{ message: 'wrong recovery code', field: "recoveryCode" }] })
+        } else {
+            res.sendStatus(204)
+        }
+    }
 }
