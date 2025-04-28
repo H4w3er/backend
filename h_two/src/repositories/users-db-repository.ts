@@ -1,19 +1,19 @@
 import {userCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {v4 as uuidv4} from "uuid";
-import {UserViewType} from "../db/user-type-db";
+import {UserModel, UserViewType} from "../db/user-type-db";
 import {injectable} from "inversify";
 
 @injectable()
 export class UsersDbRepository {
     async createUser(newUser: any) {
-        await userCollection.insertOne(newUser)
+        await UserModel.insertOne(newUser)
         return await this.userMapper(newUser);
     }
 
     async deleteUser(id: string) {
         const objId = new ObjectId(id);
-        const result = await userCollection.deleteOne({_id: objId})
+        const result = await UserModel.deleteOne({_id: objId})
         return result.deletedCount === 1;
     }
 
