@@ -1,6 +1,5 @@
-import {userCollection} from "../db/mongo-db";
 import {injectable} from "inversify";
-
+import {UserModel} from "../db/user-type-db";
 
 @injectable()
 export class UsersDbQueryRepository {
@@ -25,14 +24,15 @@ export class UsersDbQueryRepository {
             $or: [byLogin, byEmail]
         }
         if (sortBy === 'login') sortBy = 'userName'
+
         try {
-            const items = await userCollection
+            const items = await UserModel
                 .find(filter)
-                .sort(sortBy, sortDirection)
+                .sort({[sortBy]: sortDirection})
                 .skip((pageNumber - 1) * pageSize)
                 .limit(Number(pageSize))
-                .toArray() as any[]
-            const totalCount = await userCollection.countDocuments(filter)
+                .lean()
+            const totalCount = await UserModel.countDocuments(filter)
             return {
                 pagesCount: Math.ceil(totalCount / pageSize),
                 page: Number(pageNumber),
