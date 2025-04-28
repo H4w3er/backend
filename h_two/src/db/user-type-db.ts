@@ -1,5 +1,6 @@
+import mongoose from 'mongoose'
+//import { BlogType } from '../../routes/blogs-router'
 import {ObjectId} from "mongodb";
-
 
 export class UserDbTypeCommon {
     constructor(public _id: ObjectId,
@@ -24,6 +25,19 @@ export class UserViewType {
                 public email: string,
                 public createdAt: string
     ) {
-
     }
 }
+
+export const UserSchema = new mongoose.Schema<UserDbTypeCommon>({
+    _id: { type: ObjectId, require: true },
+    userName: { type: String, require: true },
+    email: { type: String, require: true },
+    passwordHash: { type: String, require: true },
+    passwordSalt: { type: String, require: true },
+    createdAt: { type: String, require: true },
+    emailConfirm: {
+        confCode: String,
+        isConfirmed: Boolean},
+    refreshTokenBlackList: []
+})
+export const UserModel = mongoose.model<UserDbTypeCommon>('users', UserSchema)
