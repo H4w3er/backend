@@ -7,6 +7,7 @@ import {
 } from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
+import {UserModel} from "../db/user-type-db";
 
 @injectable()
 export class BlogsDbRepository {
@@ -36,7 +37,7 @@ export class BlogsDbRepository {
     async deleteAll(): Promise<boolean> {
         await blogCollection.deleteMany()
         await postCollection.deleteMany()
-        await userCollection.deleteMany()
+        await UserModel.deleteMany()
         await commentsCollection.deleteMany()
         await refreshTokenCollection.deleteMany()
         await requestsToApiCollection.deleteMany()
