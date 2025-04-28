@@ -6,6 +6,25 @@ import {UserDbTypeCommon} from "./user-type-db";
 import {CommentsDbType} from "./comments-type-db";
 import {refreshTokenDb} from "./refresh-Token-db";
 import {requestsToApi} from "./requests-to-api-type-db";
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+
+dotenv.config()
+
+const dbName = 'home_works'
+const mongoURI = SETTINGS.MONGO_URI || `mongodb://0.0.0.0:27017/${dbName}`
+
+export async function runDb() {
+    try {
+        await mongoose.connect(mongoURI)
+        console.log('db connected')
+    } catch (e) {
+        console.log('no connection')
+        await mongoose.disconnect()
+    }
+}
+
+
 
 // получение доступа к бд
 const client: MongoClient = new MongoClient(SETTINGS.MONGO_URI)
@@ -19,7 +38,7 @@ export const commentsCollection: Collection<CommentsDbType> = db.collection<Comm
 export const refreshTokenCollection: Collection<refreshTokenDb> = db.collection<refreshTokenDb>(SETTINGS.PATH.SECURITYDEVICES)
 export const requestsToApiCollection: Collection<requestsToApi> = db.collection<requestsToApi>(SETTINGS.PATH.REQUESTSTOAPI)
 
-export async function runDb () {
+/*export async function runDb () {
     try {
         await client.connect()
         console.log('connected to db')
@@ -29,4 +48,4 @@ export async function runDb () {
         await client.close()
         return false
     }
-}
+}*/
