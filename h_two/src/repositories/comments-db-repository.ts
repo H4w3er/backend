@@ -1,12 +1,12 @@
 import {commentsCollection} from "../db/mongo-db";
-import {CommentsDbType} from "../db/comments-type-db";
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
+import {CommentsDbTypeCommon, CommentsModel} from "../db/comments-type-db";
 
 @injectable()
-export class CommentsDbRepository{
+export class CommentsDbRepository {
 
-    async commentMapper (comment: CommentsDbType | null){
+    async commentMapper(comment: CommentsDbTypeCommon | null) {
         if (comment) {
             return {
                 id: comment._id,
@@ -20,7 +20,8 @@ export class CommentsDbRepository{
         }
         return null;
     }
-    async commentFilterForPost (postId: string, sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber:number=1, pageSize:number=10){
+
+    async commentFilterForPost(postId: string, sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber: number = 1, pageSize: number = 10) {
         try {
             const items = await commentsCollection
                 .find({postId: new ObjectId(postId)})
@@ -43,25 +44,29 @@ export class CommentsDbRepository{
             return {error: 'some error'}
         }
     }
-    async createComment(comment: any){
-        const idOfComment = await commentsCollection.insertOne(comment);
-        const newCommentDbType = await commentsCollection.findOne({_id: idOfComment.insertedId})
-        return this.commentMapper(newCommentDbType)
-    }
-    async getCommentById(commentId: string){
-        const objId = new ObjectId(commentId)
-        const comment = await commentsCollection.findOne({_id: objId})
+
+    async createComment(comment: CommentsDbTypeCommon) {
+        await CommentsModel.insertOne(comment);
         return this.commentMapper(comment)
     }
-    async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber:number, pageSize:number){
+
+    async getCommentById(commentId: string) {
+        const objId = new ObjectId(commentId)
+        const comment = await CommentsModel.findOne({_id: objId})
+        return this.commentMapper(comment)
+    }
+
+    async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
         return this.commentFilterForPost(postId, sortBy, sortDirection, pageNumber, pageSize)
     }
-    async updateCommentById(commentId: string, newContent: string){
-        await commentsCollection.updateOne({_id: new ObjectId(commentId)}, {$set: {content: newContent}})
+
+    async updateCommentById(commentId: string, newContent: string) {
+        await CommentsModel.updateOne({_id: new ObjectId(commentId)}, {$set: {content: newContent}})
         return true
     }
-    async deleteCommentById(commentId:string){
-        await commentsCollection.deleteOne({_id:new ObjectId(commentId)})
+
+    async deleteCommentById(commentId: string) {
+        await CommentsModel.deleteOne({_id: new ObjectId(commentId)})
         return true
     }
 }
