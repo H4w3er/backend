@@ -8,13 +8,19 @@ export class CommentsService {
 
     async createComment(postId: string, content: string, userId: ObjectId, login: string){
         const newComment = {
+            _id: new ObjectId(),
             content: content,
             commentatorInfo:{
-                userId: userId.toString(),
+                userId: userId,
                 userLogin: login,
             },
             createdAt: new Date().toISOString(),
-            postId: new ObjectId(postId)
+            postId: new ObjectId(postId),
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: 'None'
+        },
         }
         return this.commentsDbRepository.createComment(newComment)
     }
@@ -27,14 +33,14 @@ export class CommentsService {
     async updateCommentById(commentId: string, newContent:string, userId: ObjectId){
         const oldComment = await this.commentsDbRepository.getCommentById(commentId)
         if (!oldComment) return null;
-        if (userId.toString() !== oldComment.commentatorInfo.userId) return 1;
+        if (userId !== oldComment.commentatorInfo.userId) return 1;
         const newComment = await this.commentsDbRepository.updateCommentById(commentId, newContent)
         return newComment;
     }
     async deleteCommentById(commentId: string, userId: ObjectId){
         const oldComment = await this.commentsDbRepository.getCommentById(commentId)
         if (!oldComment) return null;
-        if (userId.toString() !== oldComment.commentatorInfo.userId) return 1;
+        if (userId !== oldComment.commentatorInfo.userId) return 1;
         const newComment = await this.commentsDbRepository.deleteCommentById(commentId)
         return newComment;
     }
