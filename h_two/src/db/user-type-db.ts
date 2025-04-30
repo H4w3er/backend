@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-//import { BlogType } from '../../routes/blogs-router'
 import {ObjectId} from "mongodb";
 
 export class UserDbTypeCommon {
