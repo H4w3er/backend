@@ -7,13 +7,13 @@ import {injectable} from "inversify";
 @injectable()
 export class UsersDbRepository {
     async createUser(newUser: any) {
-        await UserModel.insertOne(newUser)
+        await userCollection.insertOne(newUser)
         return await this.userMapper(newUser);
     }
 
     async deleteUser(id: string) {
         const objId = new ObjectId(id);
-        const result = await UserModel.deleteOne({_id: objId})
+        const result = await userCollection.deleteOne({_id: objId})
         return result.deletedCount === 1;
     }
 
