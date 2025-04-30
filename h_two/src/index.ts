@@ -10,6 +10,7 @@ import {commentsRouter} from "./routers/comments-router";
 import cookieParser from "cookie-parser";
 import {securityDevicesRouter} from "./routers/securityDevices-router";
 import {container} from "./composition-root";
+import {model} from "mongoose";
 
 export const app = express()
 const blogsService = container.get(BlogsService)
@@ -39,3 +40,8 @@ const startApp = async () =>{
     })
 }
 startApp()
+
+//TODO
+// Перевести весь проект на mongoose/schema/model
+// Протестить функциональность ебучих коментов со схемой
+// Узнать совместимы ли бдшки ваще
