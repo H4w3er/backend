@@ -2,6 +2,7 @@ import {BlogsDbRepository} from "../repositories/blogs-db-repository";
 import {PostsService} from "./posts-service";
 import {PostsDbQueryRepository} from "../repositories/posts-db-query-repository";
 import {injectable} from "inversify";
+import {ObjectId} from "mongodb";
 
 @injectable()
 export class BlogsService{
@@ -11,6 +12,7 @@ export class BlogsService{
 
     async createBlog(name: string, description: string, websiteUrl: string){
         const newBlog = {
+            _id: new ObjectId(),
             name: name,
             description: description,
             websiteUrl: websiteUrl,
