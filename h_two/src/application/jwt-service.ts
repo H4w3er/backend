@@ -6,7 +6,7 @@ import {injectable} from "inversify";
 export class JwtService {
     async createJWT(id: ObjectId) {
         const jwt = require('jsonwebtoken')
-        const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '10 seconds'})
+        const token = jwt.sign({userId: id}, SETTINGS.JWT_SECRET, {expiresIn: '10 minutes'})
         return token
     }
     async getIdFromToken(token: string) {
