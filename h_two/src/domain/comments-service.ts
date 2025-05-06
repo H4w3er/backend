@@ -1,10 +1,11 @@
 import {CommentsDbRepository} from "../repositories/comments-db-repository";
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
+import {JwtService} from "../application/jwt-service";
 
 @injectable()
 export class CommentsService {
-    constructor(protected commentsDbRepository: CommentsDbRepository) {}
+    constructor(protected commentsDbRepository: CommentsDbRepository, protected jwtService: JwtService) {}
 
     async createComment(postId: string, content: string, userId: ObjectId, login: string){
         const newComment = {
@@ -24,24 +25,33 @@ export class CommentsService {
         }
         return this.commentsDbRepository.createComment(newComment)
     }
-    async getCommentById(commentId: string){
-        return this.commentsDbRepository.getCommentById(commentId)
+    async getCommentById(commentId: string, userId: string){
+        return this.commentsDbRepository.getCommentById(commentId, userId.toString())
     }
     async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber:any, pageSize:any){
         return await this.commentsDbRepository.getCommentForPost(postId, sortBy, sortDirection, pageNumber, pageSize)
     }
-    async updateCommentById(commentId: string, newContent:string, userId: ObjectId){
-        const oldComment = await this.commentsDbRepository.getCommentById(commentId)
+    async updateCommentById(commentId: string, newContent:string, userId: string){
+        const userIdObj = new ObjectId(userId)
+        const oldComment = await this.commentsDbRepository.getCommentById(commentId, userId)
         if (!oldComment) return null;
-        if (userId !== oldComment.commentatorInfo.userId) return 1;
+        if (userIdObj !== oldComment.commentatorInfo.userId) return 1;
         const newComment = await this.commentsDbRepository.updateCommentById(commentId, newContent)
         return newComment;
     }
-    async deleteCommentById(commentId: string, userId: ObjectId){
-        const oldComment = await this.commentsDbRepository.getCommentById(commentId)
+    async deleteCommentById(commentId: string, userId: string){
+        const userIdObj = new ObjectId(userId)
+        const oldComment = await this.commentsDbRepository.getCommentById(commentId, userId)
         if (!oldComment) return null;
-        if (userId !== oldComment.commentatorInfo.userId) return 1;
+        if (userIdObj !== oldComment.commentatorInfo.userId) return 1;
         const newComment = await this.commentsDbRepository.deleteCommentById(commentId)
         return newComment;
+    }
+    async updateLikeStatus(newLikeStatus: string, userId: ObjectId, commentId: string){
+        //console.log(userId)
+        const comment = await this.commentsDbRepository.getCommentById(commentId, userId.toString())
+        if (!comment) return 'not found'
+        await this.commentsDbRepository.updateLikeStatus(newLikeStatus, userId.toString(), commentId)
+        return 'updated'
     }
 }
