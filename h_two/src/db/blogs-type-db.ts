@@ -1,32 +1,24 @@
-export type BlogDbType = {
-    //_id: string
-    name: string // max 15
-    description: string // max 500
-    websiteUrl: string // max 100 ^https://([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$
-    createdAt: string
-    isMembership: boolean
-}
-export type BlogsUserViewType = {
-    "pagesCount": number,
-    "page": number,
-    "pageSize": number,
-    "totalCount": number,
-    "items": [
-    {
-        "id": "string",
-        "name": "string",
-        "description": "string",
-        "websiteUrl": "string",
-        "createdAt": "2024-11-17T15:47:16.266Z",
-        "isMembership": true
+import mongoose from "mongoose";
+import {ObjectId} from "mongodb";
+
+export class BlogDbType {
+    constructor(
+        public _id: ObjectId,
+        public name: string,
+        public description: string,
+        public websiteUrl: string,
+        public createdAt: string,
+        public isMembership: boolean) {
+
     }
-]
 }
-export type BlogUserViewType = {
-    "id": "string",
-    "name": "string",
-    "description": "string",
-    "websiteUrl": "string",
-    "createdAt": "2024-11-17T15:47:16.266Z",
-    "isMembership": true
-}
+
+export const BlogDbTypeSchema = new mongoose.Schema<BlogDbType>({
+    _id: {type: ObjectId, require: true},
+    name: {type: String, require: true},
+    description: {type: String, require: true},
+    websiteUrl: {type: String, require: true},
+    createdAt: {type: String, require: true},
+    isMembership: {type: Boolean, require: true},
+})
+export const BlogDbTypeModel = mongoose.model<BlogDbType>('blogs', BlogDbTypeSchema)
