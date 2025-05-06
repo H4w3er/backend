@@ -12,7 +12,6 @@ export const authBearerMiddleware = async (req: Request, res: Response, next: Ne
         res.sendStatus(401)
         return
     }
-
     const token = req.headers.authorization?.split(' ')[1] as string
     const userIdFromToken = await jwtService.getIdFromToken(token)
     if (userIdFromToken.userId){
