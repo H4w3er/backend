@@ -20,6 +20,15 @@ export class CommentsDbTypeCommon {
     }
 }
 
+export class LikerInfo {
+    constructor(
+        public likerId: string,
+        public status: string,
+        public commentId: string
+    ) {
+    }
+}
+
 export const CommentsSchema = new mongoose.Schema<CommentsDbTypeCommon>({
     _id: {type: ObjectId, require: true},
     content: {type: String, require: true},
@@ -35,4 +44,10 @@ export const CommentsSchema = new mongoose.Schema<CommentsDbTypeCommon>({
         myStatus: ['None', 'Like', 'Dislike']
     }
 })
+export const LikerInfoSchema = new mongoose.Schema<LikerInfo>({
+     likerId: {type: String, require: true},
+     status: {type: String, require: true},
+     commentId: {type: String, require: true}
+})
 export const CommentsModel = mongoose.model<CommentsDbTypeCommon>('comments', CommentsSchema)
+export const LikerInfoModel = mongoose.model<LikerInfo>('likes', LikerInfoSchema)
