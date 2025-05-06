@@ -1,7 +1,6 @@
 import request from 'supertest'
 import {app} from "../../src";
-import {header} from "express-validator";
-import {response} from "express";
+
 
 describe('Token validation', () => {
     beforeAll(async ()=>{
