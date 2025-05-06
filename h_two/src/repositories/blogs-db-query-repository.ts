@@ -1,10 +1,10 @@
 import {ObjectId} from "mongodb";
-import {blogCollection} from "../db/mongo-db";
 import {injectable} from "inversify";
+import {BlogDbTypeModel} from "../db/blogs-type-db";
 
 @injectable()
 export class BlogsDbQueryRepository {
-    async blogMapper  (value: any)  {
+    blogMapper  (value: any)  {
         if (value) {
             return {
                 id: value._id,
@@ -22,13 +22,13 @@ export class BlogsDbQueryRepository {
             : {}
         try {
             // собственно запрос в бд (может быть вынесено во вспомогательный метод)
-            const items = await blogCollection
+            const items = await BlogDbTypeModel
                 .find(byName)
-                .sort(sortBy, sortDirection)
+                .sort({[sortBy]: sortDirection})
                 .skip((pageNumber - 1) * pageSize)
                 .limit(Number(pageSize))
-                .toArray() as any[]
-            const totalCount = await blogCollection.countDocuments(byName)
+                .lean()
+            const totalCount = await BlogDbTypeModel.countDocuments(byName)
 
             // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
             return {
@@ -48,12 +48,12 @@ export class BlogsDbQueryRepository {
     }
     async findBlogsById(id: string) {
         const newId = new ObjectId(id);
-        const blog = await blogCollection.findOne({_id: newId})
+        const blog = await BlogDbTypeModel.findOne({_id: newId})
         return this.blogMapper(blog)
     }
     async getBlogName(id: string):Promise<string>{
         const newId = new ObjectId(id);
-        const blog = await blogCollection.findOne({_id: newId})
+        const blog = await BlogDbTypeModel.findOne({_id: newId})
         // @ts-ignore
         return blog.name;
     }
