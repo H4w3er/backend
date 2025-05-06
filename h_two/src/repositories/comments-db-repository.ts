@@ -1,13 +1,12 @@
-import {commentsCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
-import {CommentsDbTypeCommon, CommentsModel} from "../db/comments-type-db";
+import {CommentsDbTypeCommon, CommentsModel, LikerInfo, LikerInfoModel} from "../db/comments-type-db";
 
 @injectable()
 export class CommentsDbRepository {
 
-    async commentMapper(comment: CommentsDbTypeCommon | null) {
-        if (comment) {
+    commentMapper(comment: CommentsDbTypeCommon | null, status: string = 'None') {
+        if (comment && status) {
             return {
                 id: comment._id,
                 content: comment.content,
@@ -15,7 +14,12 @@ export class CommentsDbRepository {
                     userId: comment.commentatorInfo.userId,
                     userLogin: comment.commentatorInfo.userLogin
                 },
-                createdAt: comment.createdAt
+                createdAt: comment.createdAt,
+                likesInfo: {
+                    likesCount: 0,
+                    dislikesCount: 0,
+                    myStatus: status
+                },
             }
         }
         return null;
@@ -23,13 +27,13 @@ export class CommentsDbRepository {
 
     async commentFilterForPost(postId: string, sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber: number = 1, pageSize: number = 10) {
         try {
-            const items = await commentsCollection
+            const items = await CommentsModel
                 .find({postId: new ObjectId(postId)})
-                .sort(sortBy, sortDirection)
+                .sort({[sortBy]: sortDirection})
                 .skip((pageNumber - 1) * pageSize)
                 .limit(Number(pageSize))
-                .toArray() as any[]
-            const totalCount = await commentsCollection.countDocuments({postId: new ObjectId(postId)})
+                .lean()
+            const totalCount = await CommentsModel.countDocuments({postId: new ObjectId(postId)})
 
             // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
             return {
@@ -50,10 +54,17 @@ export class CommentsDbRepository {
         return this.commentMapper(comment)
     }
 
-    async getCommentById(commentId: string) {
-        const objId = new ObjectId(commentId)
-        const comment = await CommentsModel.findOne({_id: objId})
-        return this.commentMapper(comment)
+    async getCommentById(commentId: string, userId: string) {
+        const commentIdObj = new ObjectId(commentId)
+        const comment = await CommentsModel.findOne({_id: commentIdObj})
+        let likeInfo: LikerInfo | null = await LikerInfoModel.findOne({likerId: userId, commentId: commentId})
+
+        if (!likeInfo) {
+            likeInfo = {likerId: userId, status: 'None', commentId: commentId}
+            await LikerInfoModel.insertOne(likeInfo)
+            return this.commentMapper(comment, likeInfo.status)
+        } else return this.commentMapper(comment, likeInfo.status)
+
     }
 
     async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
@@ -68,5 +79,10 @@ export class CommentsDbRepository {
     async deleteCommentById(commentId: string) {
         await CommentsModel.deleteOne({_id: new ObjectId(commentId)})
         return true
+    }
+
+    async updateLikeStatus(newLikeStatus: string, userId: string, commentId: string){
+        await LikerInfoModel.updateOne({likerId: userId, commentId: commentId}, {$set: {status: newLikeStatus}})
+
     }
 }
