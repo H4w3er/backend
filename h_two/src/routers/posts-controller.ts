@@ -12,8 +12,11 @@ export class PostsController {
     }
 
     async getPosts(req: Request, res: Response) {
-        // @ts-ignore
-        let posts = await this.postQueryRepository.findPosts(req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
+        const sortBy = req.query.sortBy as string
+        const sortDirection = req.query.sortDirection as string
+        const pageNumber = req.query.pageNumber as string
+        const pageSize = req.query.pageSize as string
+        let posts = await this.postDbQueryRepository.findPosts(sortBy, sortDirection, pageNumber, pageSize)
         res.send(posts);
     }
 
