@@ -32,7 +32,6 @@ export class CommentsController {
     async updateLikeStatus(req: Request, res: Response){
         const likeStatus = req.body.likeStatus
         const userId = req.user!._id
-        //console.log(userId)
         const commentId = req.params.commentId
         const response = await this.commentsService.updateLikeStatus(likeStatus, userId, commentId)
         if (response === "not found") res.sendStatus(404)
