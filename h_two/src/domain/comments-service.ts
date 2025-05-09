@@ -48,10 +48,12 @@ export class CommentsService {
         return newComment;
     }
     async updateLikeStatus(newLikeStatus: string, userId: ObjectId, commentId: string){
-        //console.log(userId)
         const comment = await this.commentsDbRepository.getCommentById(commentId, userId.toString())
         if (!comment) return 'not found'
-        await this.commentsDbRepository.updateLikeStatus(newLikeStatus, userId.toString(), commentId)
+        const oldStatus = await this.commentsDbRepository.getLikeStatus(userId.toString(), commentId)
+        if (!oldStatus) return 'not found'
+        if (oldStatus.status === newLikeStatus) return 'updated'
+        await this.commentsDbRepository.updateLikeStatus(newLikeStatus, userId.toString(), commentId, oldStatus.status)
         return 'updated'
     }
 }
