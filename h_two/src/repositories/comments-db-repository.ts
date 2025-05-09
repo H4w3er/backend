@@ -6,7 +6,7 @@ import {CommentsDbTypeCommon, CommentsModel, LikerInfo, LikerInfoModel} from "..
 export class CommentsDbRepository {
 
     commentMapper(comment: CommentsDbTypeCommon | null, status: string = 'None') {
-        if (comment && status) {
+        if (comment) {
             return {
                 id: comment._id,
                 content: comment.content,
@@ -16,8 +16,8 @@ export class CommentsDbRepository {
                 },
                 createdAt: comment.createdAt,
                 likesInfo: {
-                    likesCount: 0,
-                    dislikesCount: 0,
+                    likesCount: comment.likesInfo.likesCount,
+                    dislikesCount: comment.likesInfo.dislikesCount,
                     myStatus: status
                 },
             }
@@ -51,6 +51,7 @@ export class CommentsDbRepository {
 
     async createComment(comment: CommentsDbTypeCommon) {
         await CommentsModel.insertOne(comment);
+        await LikerInfoModel.insertOne({likerId: comment.commentatorInfo.userId.toString(), status: 'None', commentId: comment._id.toString()})
         return this.commentMapper(comment)
     }
 
@@ -81,8 +82,18 @@ export class CommentsDbRepository {
         return true
     }
 
-    async updateLikeStatus(newLikeStatus: string, userId: string, commentId: string){
+    async updateLikeStatus(newLikeStatus: string, userId: string, commentId: string, oldLikeStatus: string){
+        const commentIdObj = new ObjectId(commentId)
         await LikerInfoModel.updateOne({likerId: userId, commentId: commentId}, {$set: {status: newLikeStatus}})
+        if (newLikeStatus === 'None' && oldLikeStatus === 'Like') await CommentsModel.updateOne({_id: commentIdObj}, {$inc: { "likesInfo.likesCount": -1}})
+        if (newLikeStatus === 'None' && oldLikeStatus === 'Dislike') await CommentsModel.updateOne({_id: commentIdObj}, {$inc: { "likesInfo.dislikesCount": -1}})
+        if (newLikeStatus === 'Like' && oldLikeStatus === 'Dislike') await CommentsModel.updateOne({_id: commentIdObj}, {$set: {$inc: { "likesInfo.likesCount": 1, "likesInfo.dislikesCount": -1}}})
+        if (newLikeStatus === 'Like' && oldLikeStatus === 'None') await CommentsModel.updateOne({_id: commentIdObj}, {$inc: { "likesInfo.likesCount": 1}})
+        if (newLikeStatus === 'Dislike' && oldLikeStatus === 'None') await CommentsModel.updateOne({_id: commentIdObj}, {$inc: { "likesInfo.dislikesCount": 1}})
+        if (newLikeStatus === 'Dislike' && oldLikeStatus === 'Like') await CommentsModel.updateOne({_id: commentIdObj}, {$set: {$inc: { "likesInfo.likesCount": -1, "likesInfo.dislikesCount": +1}}})
+    }
 
+    async getLikeStatus(userId: string, commentId: string){
+        return LikerInfoModel.findOne({likerId: userId, commentId: commentId})
     }
 }
