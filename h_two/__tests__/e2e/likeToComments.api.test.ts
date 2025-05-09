@@ -30,6 +30,7 @@ describe('Likes tests', () => {
             expect(firstUserCreation.status).toBe(201)
             expect(secondUserCreation.status).toBe(201)
         })
+        jest.setTimeout(10000);
         it('should create new blog and post to this blog, than auth two users and create comments', async () => {
             const authorizationToken = 'Basic admin:qwerty'
             const blogCreation = await request(app)
@@ -66,10 +67,11 @@ describe('Likes tests', () => {
             expect(firstUserLogin.status).toBe(200)
             expect(secondUserLogin.status).toBe(200)
 
-            const accessToken = firstUserLogin.body.accessToken
+            const accessTokenFirst = firstUserLogin.body.accessToken
+            const accessTokenSecond = secondUserLogin.body.accessToken
             const comment = await request(app)
                 .post(`/posts/${postCreation.body.id}/comments`)
-                .set('Authorization', 'Bearer ' + accessToken)
+                .set('Authorization', 'Bearer ' + accessTokenFirst)
                 .send({
                     "content":"first comment for first post"
                 })
@@ -77,7 +79,7 @@ describe('Likes tests', () => {
 
             const likeComment = await request(app)
                 .put(`/comments/${comment.body.id}/like-status`)
-                .set('Authorization', 'Bearer ' + accessToken)
+                .set('Authorization', 'Bearer ' + accessTokenFirst)
                 .send({
                     "likeStatus": "Like"
                 })
@@ -85,11 +87,14 @@ describe('Likes tests', () => {
 
             const updatedComment = await request(app)
                 .get(`/comments/${comment.body.id}`)
-                .set('Authorization', 'Bearer ' + accessToken)
-                .send({
-                    "content":"first comment for first post"
-                })
-            console.log(updatedComment.body)
+                .set('Authorization', 'Bearer ' + accessTokenFirst)
+            expect(updatedComment.body.likesInfo.myStatus).toBe('Like')
+
+            const updatedCommentForSecUser = await request(app)
+                .get(`/comments/${comment.body.id}`)
+                .set('Authorization', 'Bearer ' + accessTokenSecond)
+            console.log(updatedCommentForSecUser.body)
+            expect(updatedCommentForSecUser.body.likesInfo.myStatus).toBe('None')
         })
     })
 })
