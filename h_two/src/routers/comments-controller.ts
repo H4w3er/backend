@@ -8,8 +8,8 @@ export class CommentsController {
     }
 
     async getCommentById(req: Request, res: Response) {
-        const userId = req.user!._id
-        const comment = await this.commentsService.getCommentById(req.params.id, userId)
+        const authToken = req.headers.authorization as string
+        const comment = await this.commentsService.getCommentById(req.params.id, authToken)
         if (!comment) {
             res.sendStatus(404)
         } else res.status(200).send(comment)
