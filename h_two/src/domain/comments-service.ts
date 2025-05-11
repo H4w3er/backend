@@ -25,11 +25,21 @@ export class CommentsService {
         }
         return this.commentsDbRepository.createComment(newComment)
     }
-    async getCommentById(commentId: string, userId: string){
-        return this.commentsDbRepository.getCommentById(commentId, userId.toString())
+    async getCommentById(commentId: string, authToken: string){
+        let user = null
+        if (authToken) {
+            user = await this.jwtService.getIdFromToken(authToken.split(' ')[1] as string)
+        }
+        if (!user) return this.commentsDbRepository.getCommentById(commentId, 'nothing')
+        else return this.commentsDbRepository.getCommentById(commentId, user.userId.toString())
     }
-    async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber:any, pageSize:any){
-        return await this.commentsDbRepository.getCommentForPost(postId, sortBy, sortDirection, pageNumber, pageSize)
+    async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber:any, pageSize:any, authToken: string){
+        let user = null
+        if (authToken) {
+            user = await this.jwtService.getIdFromToken(authToken.split(' ')[1] as string)
+        }
+        if (!user) return await this.commentsDbRepository.getCommentForPost(postId, sortBy, sortDirection, pageNumber, pageSize, 'nothing')
+        else return await this.commentsDbRepository.getCommentForPost(postId, sortBy, sortDirection, pageNumber, pageSize, user.userId.toString())
     }
     async updateCommentById(commentId: string, newContent:string, userId: string){
         const userIdObj = new ObjectId(userId)
