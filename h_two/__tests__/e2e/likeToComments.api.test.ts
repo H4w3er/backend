@@ -69,32 +69,60 @@ describe('Likes tests', () => {
 
             const accessTokenFirst = firstUserLogin.body.accessToken
             const accessTokenSecond = secondUserLogin.body.accessToken
-            const comment = await request(app)
+            const firstComment = await request(app)
                 .post(`/posts/${postCreation.body.id}/comments`)
                 .set('Authorization', 'Bearer ' + accessTokenFirst)
                 .send({
                     "content":"first comment for first post"
                 })
-            expect(comment.status).toBe(201)
+            expect(firstComment.status).toBe(201)
 
-            const likeComment = await request(app)
-                .put(`/comments/${comment.body.id}/like-status`)
+            const secondComment = await request(app)
+                .post(`/posts/${postCreation.body.id}/comments`)
+                .set('Authorization', 'Bearer ' + accessTokenSecond)
+                .send({
+                    "content":"first comment for first post"
+                })
+            expect(secondComment.status).toBe(201)
+
+            const likeFirstComment = await request(app)
+                .put(`/comments/${firstComment.body.id}/like-status`)
                 .set('Authorization', 'Bearer ' + accessTokenFirst)
                 .send({
                     "likeStatus": "Like"
                 })
-            expect(likeComment.status).toBe(204)
+            expect(likeFirstComment.status).toBe(204)
+            const likeSecondComment = await request(app)
+                .put(`/comments/${secondComment.body.id}/like-status`)
+                .set('Authorization', 'Bearer ' + accessTokenSecond)
+                .send({
+                    "likeStatus": "Like"
+                })
+            expect(likeFirstComment.status).toBe(204)
 
             const updatedComment = await request(app)
-                .get(`/comments/${comment.body.id}`)
+                .get(`/comments/${firstComment.body.id}`)
                 .set('Authorization', 'Bearer ' + accessTokenFirst)
             expect(updatedComment.body.likesInfo.myStatus).toBe('Like')
+            //console.log(updatedComment.body)
+
+            const likeCommentSecond = await request(app)
+                .put(`/comments/${secondComment.body.id}/like-status`)
+                .set('Authorization', 'Bearer ' + accessTokenSecond)
+                .send({
+                    "likeStatus": "Like"
+                })
+            expect(likeFirstComment.status).toBe(204)
 
             const updatedCommentForSecUser = await request(app)
-                .get(`/comments/${comment.body.id}`)
+                .get(`/comments/${firstComment.body.id}`)
                 .set('Authorization', 'Bearer ' + accessTokenSecond)
-            console.log(updatedCommentForSecUser.body)
+            //console.log(updatedCommentForSecUser.body)
             expect(updatedCommentForSecUser.body.likesInfo.myStatus).toBe('None')
+
+            const allCommentsForNoOne = await request(app)
+                .get(`/posts/${postCreation.body.id}/comments`)
+            console.log(allCommentsForNoOne.body.items[0])
         })
     })
 })
