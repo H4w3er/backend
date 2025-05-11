@@ -9,7 +9,7 @@ export const commentsRouter = Router()
 
 const commentsController = container.get(CommentsController)
 
-commentsRouter.get('/:id', authBearerMiddleware, commentsController.getCommentById.bind(commentsController))
+commentsRouter.get('/:id', commentsController.getCommentById.bind(commentsController))
 
 commentsRouter.put('/:commentId', authBearerMiddleware, contentCommentValidation, inputValidationMiddleware, commentsController.updateComment.bind(commentsController))
 
