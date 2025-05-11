@@ -25,7 +25,7 @@ export class CommentsDbRepository {
         return null;
     }
 
-    async commentFilterForPost(postId: string, sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber: number = 1, pageSize: number = 10) {
+    async commentFilterForPost(postId: string, sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber: number = 1, pageSize: number = 10, userId: string = 'nothing') {
         try {
             const items = await CommentsModel
                 .find({postId: new ObjectId(postId)})
@@ -41,7 +41,20 @@ export class CommentsDbRepository {
                 page: Number(pageNumber),
                 pageSize: Number(pageSize),
                 totalCount: totalCount,
-                items: items.map(value => this.commentMapper(value))
+                items: items.map(async comment => {
+                    if (userId === 'nothing') return this.commentMapper(comment)
+                    else {
+                        const likesInfoArray = await LikerInfoModel.find({
+                            likerId: userId,
+                            commentId: comment._id
+                        }).lean()
+                        for (let likerInfo of likesInfoArray) {
+                            if (comment._id === new ObjectId(likerInfo.commentId)) return this.commentMapper(comment, likerInfo.status)
+                            else return this.commentMapper(comment)
+                        }
+                        return this.commentMapper(comment)
+                    }
+                })
             }
         } catch (e) {
             console.log(e)
@@ -50,25 +63,26 @@ export class CommentsDbRepository {
     }
 
     async createComment(comment: CommentsDbTypeCommon) {
-        await CommentsModel.insertOne(comment);
-        await LikerInfoModel.insertOne({likerId: comment.commentatorInfo.userId.toString(), status: 'None', commentId: comment._id.toString()})
+        await CommentsModel.create(comment);
+        await LikerInfoModel.create({likerId: comment.commentatorInfo.userId.toString(), status: 'None', commentId: comment._id.toString()})
         return this.commentMapper(comment)
     }
 
     async getCommentById(commentId: string, userId: string) {
         const commentIdObj = new ObjectId(commentId)
         const comment = await CommentsModel.findOne({_id: commentIdObj})
+        if (userId === 'nothing') return this.commentMapper(comment)
         let likeInfo: LikerInfo | null = await LikerInfoModel.findOne({likerId: userId, commentId: commentId})
-
         if (!likeInfo) {
             likeInfo = {likerId: userId, status: 'None', commentId: commentId}
-            await LikerInfoModel.insertOne(likeInfo)
+            await LikerInfoModel.create(likeInfo)
             return this.commentMapper(comment, likeInfo.status)
         } else return this.commentMapper(comment, likeInfo.status)
 
     }
 
-    async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
+    async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number, userId: string) {
+
         return this.commentFilterForPost(postId, sortBy, sortDirection, pageNumber, pageSize)
     }
 
