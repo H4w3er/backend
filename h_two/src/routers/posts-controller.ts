@@ -61,10 +61,11 @@ export class PostsController {
 
     async getCommentsForPost(req: Request, res: Response) {
         let post = await this.postDbQueryRepository.findPostById(req.params.postId)
+        const authToken = req.headers.authorization as string
         if (!post) {
             res.sendStatus(404);
         } else {
-            const comments = await this.commentsService.getCommentForPost(req.params.postId, req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize)
+            const comments = await this.commentsService.getCommentForPost(req.params.postId, req.query.sortBy, req.query.sortDirection, req.query.pageNumber, req.query.pageSize, authToken)
             if (!comments) {
                 res.sendStatus(404)
             } else {
