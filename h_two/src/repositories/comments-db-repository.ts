@@ -34,6 +34,19 @@ export class CommentsDbRepository {
                 .limit(Number(pageSize))
                 .lean()
             const totalCount = await CommentsModel.countDocuments({postId: new ObjectId(postId)})
+            const likesInfoArray = await LikerInfoModel.find({
+                likerId: userId,
+            }).lean()
+            const mappedItems = items.map(comment => {
+                if (userId === 'nothing') return this.commentMapper(comment)
+                else {
+                    for (let likerInfo of likesInfoArray) {
+                        if (comment._id.toString() === likerInfo.commentId) return this.commentMapper(comment, likerInfo.status)
+                        else return this.commentMapper(comment)
+                    }
+                    return this.commentMapper(comment)
+                }
+            })
 
             // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
             return {
@@ -41,20 +54,7 @@ export class CommentsDbRepository {
                 page: Number(pageNumber),
                 pageSize: Number(pageSize),
                 totalCount: totalCount,
-                items: items.map(async comment => {
-                    if (userId === 'nothing') return this.commentMapper(comment)
-                    else {
-                        const likesInfoArray = await LikerInfoModel.find({
-                            likerId: userId,
-                            commentId: comment._id
-                        }).lean()
-                        for (let likerInfo of likesInfoArray) {
-                            if (comment._id === new ObjectId(likerInfo.commentId)) return this.commentMapper(comment, likerInfo.status)
-                            else return this.commentMapper(comment)
-                        }
-                        return this.commentMapper(comment)
-                    }
-                })
+                items: mappedItems
             }
         } catch (e) {
             console.log(e)
@@ -83,7 +83,7 @@ export class CommentsDbRepository {
 
     async getCommentForPost(postId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number, userId: string) {
 
-        return this.commentFilterForPost(postId, sortBy, sortDirection, pageNumber, pageSize)
+        return this.commentFilterForPost(postId, sortBy, sortDirection, pageNumber, pageSize, userId)
     }
 
     async updateCommentById(commentId: string, newContent: string) {
