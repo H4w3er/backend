@@ -81,7 +81,7 @@ describe('Likes tests', () => {
                 .post(`/posts/${postCreation.body.id}/comments`)
                 .set('Authorization', 'Bearer ' + accessTokenSecond)
                 .send({
-                    "content":"first comment for first post"
+                    "content":"second comment for first post"
                 })
             expect(secondComment.status).toBe(201)
 
@@ -122,7 +122,8 @@ describe('Likes tests', () => {
 
             const allCommentsForNoOne = await request(app)
                 .get(`/posts/${postCreation.body.id}/comments`)
-            console.log(allCommentsForNoOne.body.items[0])
+                .set('Authorization', 'Bearer ' + accessTokenFirst)
+            console.log(allCommentsForNoOne.body.items)
         })
     })
 })
