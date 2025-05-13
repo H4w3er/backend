@@ -92,7 +92,20 @@ describe('Likes tests', () => {
                     "likeStatus": "Like"
                 })
             expect(likeFirstComment.status).toBe(204)
+
             const likeSecondComment = await request(app)
+                .put(`/comments/${secondComment.body.id}/like-status`)
+                .set('Authorization', 'Bearer ' + accessTokenFirst)
+                .send({
+                    "likeStatus": "Like"
+                })
+            expect(likeFirstComment.status).toBe(204)
+
+            const allCommentsForNoOne = await request(app)
+                .get(`/posts/${postCreation.body.id}/comments`)
+                .set('Authorization', 'Bearer ' + accessTokenFirst)
+            console.log(allCommentsForNoOne.body.items[0].likesInfo)
+            /*const likeSecondComment = await request(app)
                 .put(`/comments/${secondComment.body.id}/like-status`)
                 .set('Authorization', 'Bearer ' + accessTokenSecond)
                 .send({
@@ -123,7 +136,7 @@ describe('Likes tests', () => {
             const allCommentsForNoOne = await request(app)
                 .get(`/posts/${postCreation.body.id}/comments`)
                 .set('Authorization', 'Bearer ' + accessTokenFirst)
-            console.log(allCommentsForNoOne.body.items)
+            console.log(allCommentsForNoOne.body.items)*/
         })
     })
 })
