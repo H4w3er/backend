@@ -5,7 +5,7 @@ import {PostDbTypeModel} from "../db/posts-type-db";
 @injectable()
 export class PostsDbRepository {
     async createPost(post: any){
-        await PostDbTypeModel.insertOne(post)
+        await post.save()
         return post._id;
     }
     async updatePost(id: string, title: string, shortDescription: string, content: string, blogId: string): Promise<boolean>{
