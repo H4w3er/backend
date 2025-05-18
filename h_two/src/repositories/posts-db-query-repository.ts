@@ -1,4 +1,4 @@
-import {PostDbType, PostDbTypeModel} from "../db/posts-type-db";
+import {LikerPostInfoModel, PostDbType, PostDbTypeModel} from "../db/posts-type-db";
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
 
@@ -13,7 +13,19 @@ export class PostsDbQueryRepository {
                 content: value.content,
                 blogId: value.blogId,
                 blogName: value.blogName,
-                createdAt: value.createdAt
+                createdAt: value.createdAt,
+                extendedLikesInfo: {
+                    likesCount: value.extendedLikesInfo.likesCount,
+                    dislikesCount: value.extendedLikesInfo.dislikesCount,
+                    myStatus: value.extendedLikesInfo.myStatus,
+                    newestLikes: [
+                        {
+                            addedAt: "-",
+                            userId: "-",
+                            login: "-"
+                        }
+                    ]
+                }
             };
         } else return null;
     }
@@ -80,5 +92,9 @@ export class PostsDbQueryRepository {
 
     async postsForBlog(blogId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
         return this.postFilterForBlog(blogId, sortBy, sortDirection, pageNumber, pageSize)
+    }
+
+    async getLikeStatus(userId: string, postId: string){
+        return LikerPostInfoModel.findOne({likerId: userId, postId: postId})
     }
 }
