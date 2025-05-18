@@ -29,3 +29,6 @@ postsRouter.delete('/:id', authMiddleware, postsController.deletePost.bind(posts
 postsRouter.post('/:postId/comments', authBearerMiddleware, contentCommentValidation, inputValidationMiddleware, postsController.createCommentForPost.bind(postsController))
 
 postsRouter.get('/:postId/comments', postsController.getCommentsForPost.bind(postsController))
+
+postsRouter.put('/:id/like-status', authBearerMiddleware, postsController.updatedLikeStatus.bind(postsController))
+
