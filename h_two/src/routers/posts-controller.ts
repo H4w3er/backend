@@ -73,4 +73,12 @@ export class PostsController {
             }
         }
     }
+
+    async updatedLikeStatus(req: Request, res: Response){
+        const likeStatus = req.body.likeStatus
+        const userId = req.user!._id
+        const postId = req.params.id
+        const response = await this.postsService.updatedLikeStatus(likeStatus, userId, postId)
+
+    }
 }
