@@ -4,16 +4,24 @@ import {injectable} from "inversify";
 import {ObjectId} from "mongodb";
 import {PostDbTypeModel} from "../db/posts-type-db";
 import {PostsDbQueryRepository} from "../repositories/posts-db-query-repository";
+import {JwtService} from "../application/jwt-service";
 
 @injectable()
 export class PostsService {
     constructor(protected postsDbRepository: PostsDbRepository,
                 protected blogsDbQueryRepository: BlogsDbQueryRepository,
-                protected postsDbQueryRepository: PostsDbQueryRepository) {}
+                protected postsDbQueryRepository: PostsDbQueryRepository,
+                protected jwtService: JwtService) {}
 
-    async createPost(title: string, shortDescription: string, content: string, blogId: string) {
+    async createPost(title: string, shortDescription: string, content: string, blogId: string, authToken: string) {
+        let user = null
+        if (authToken) {
+            user = await this.jwtService.getIdFromToken(authToken.split(' ')[1] as string)
+        }
+        if (!user.userId) return 'not found'
         const newPost = new PostDbTypeModel({
             _id: new ObjectId(),
+            userId: user.userId,
             title: title,
             shortDescription: shortDescription,
             content: content,
@@ -24,13 +32,13 @@ export class PostsService {
                 likesCount: 0,
                 dislikesCount: 0,
                 myStatus: 'None',
-                newestLikes: [
+                /*newestLikes: [
                     {
                         addedAt: "-",
                         userId: "-",
                         login: "-"
                     }
-                ]
+                ]*/
             }
         })
         return this.postsDbRepository.createPost(newPost)
@@ -43,11 +51,13 @@ export class PostsService {
     async deletePost(id: string): Promise<boolean> {
         return this.postsDbRepository.deletePost(id)
     }
-    async updatedLikeStatus(likeStatus: string, userId: string, postId: string){
-        const post = await this.postsDbQueryRepository.findPostById(userId)
+    async updatedLikeStatus(newLikeStatus: string, userId: string, postId: string){
+        const post = await this.postsDbQueryRepository.findPostById(postId, userId)
         if (!post) return 'not found'
         const oldStatus = await this.postsDbQueryRepository.getLikeStatus(userId, postId)
         if (!oldStatus) return 'not found'
-        return 
+        if (oldStatus.status === newLikeStatus) return 'updated'
+        await this.postsDbRepository.updateLikeStatus(newLikeStatus, userId.toString(), postId, oldStatus.status)
+        return 'updated'
     }
 }
