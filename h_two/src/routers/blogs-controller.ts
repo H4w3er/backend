@@ -62,8 +62,9 @@ export class BlogsController {
     }
 
     async createPostForBlog(req: Request, res: Response) {
+        const userId = req.user!._id
         if (await this.blogsService.isBlog(req.params.id)) {
-            let post = await this.blogsService.createPostForBlog(req.params.id, req.body.title, req.body.shortDescription, req.body.content)
+            let post = await this.blogsService.createPostForBlog(req.params.id, req.body.title, req.body.shortDescription, req.body.content, userId)
             if (post) {
                 res.status(201).send(post)
             } else res.sendStatus(404);
