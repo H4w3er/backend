@@ -49,5 +49,5 @@ export const LikerInfoSchema = new mongoose.Schema<LikerInfo>({
      status: {type: String, require: true},
      commentId: {type: String, require: true}
 })
-export const CommentsModel = mongoose.model<CommentsDbTypeCommon>('comments', CommentsSchema)
+export const PostDbTypeModel = mongoose.model<CommentsDbTypeCommon>('comments', CommentsSchema)
 export const LikerInfoModel = mongoose.model<LikerInfo>('likes', LikerInfoSchema)
