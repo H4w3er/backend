@@ -1,10 +1,11 @@
-import {LikerPostInfoModel, PostDbType, PostDbTypeModel} from "../db/posts-type-db";
+import {LikerPostInfo, LikerPostInfoModel, PostDbType, PostDbTypeModel} from "../db/posts-type-db";
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
+import {LikerInfo, LikerInfoModel} from "../db/comments-type-db";
 
 @injectable()
 export class PostsDbQueryRepository {
-    postMapper(value: PostDbType | null) {
+    postMapper(value: PostDbType | null, status: string = 'None') {
         if (value) {
             return {
                 id: value._id,
@@ -17,14 +18,14 @@ export class PostsDbQueryRepository {
                 extendedLikesInfo: {
                     likesCount: value.extendedLikesInfo.likesCount,
                     dislikesCount: value.extendedLikesInfo.dislikesCount,
-                    myStatus: value.extendedLikesInfo.myStatus,
-                    newestLikes: [
+                    myStatus: status,
+                    /*newestLikes: [
                         {
                             addedAt: "-",
                             userId: "-",
                             login: "-"
                         }
-                    ]
+                    ]*/
                 }
             };
         } else return null;
@@ -84,10 +85,16 @@ export class PostsDbQueryRepository {
         return this.postFilter(sortBy, sortDirection, pageNumber, pageSize)
     }
 
-    async findPostById(id: string) {
-        const objId = new ObjectId(id);
+    async findPostById(postId: string, userId: string) {
+        const objId = new ObjectId(postId);
         const post: PostDbType | null = await PostDbTypeModel.findOne({_id: objId})
-        return this.postMapper(post)
+        if (userId === 'nothing') return this.postMapper(post)
+        let likeInfoPost: LikerPostInfo | null = await LikerPostInfoModel.findOne({likerId: userId, postId: postId})
+        if (!likeInfoPost) {
+            likeInfoPost = {likerId: userId, status: 'None', postId: postId}
+            await LikerInfoModel.create(likeInfoPost)
+            return this.postMapper(post, likeInfoPost.status)
+        } else return this.postMapper(post, likeInfoPost.status)
     }
 
     async postsForBlog(blogId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number) {
