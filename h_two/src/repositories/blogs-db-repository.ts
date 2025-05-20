@@ -3,7 +3,7 @@ import {injectable} from "inversify";
 import {UserModel} from "../db/user-type-db";
 import {BlogDbTypeModel} from "../db/blogs-type-db";
 import {PostDbTypeModel} from "../db/posts-type-db";
-import {CommentsModel, LikerInfoModel} from "../db/comments-type-db";
+import {LikerInfoModel} from "../db/comments-type-db";
 import {RefreshTokenDbModel} from "../db/refresh-Token-db";
 import {RequestsToApiModel} from "../db/requests-to-api-type-db";
 
@@ -36,7 +36,7 @@ export class BlogsDbRepository {
         await BlogDbTypeModel.deleteMany()
         await PostDbTypeModel.deleteMany()
         await UserModel.deleteMany()
-        await CommentsModel.deleteMany()
+        await PostDbTypeModel.deleteMany()
         await RefreshTokenDbModel.deleteMany()
         await RequestsToApiModel.deleteMany()
         await LikerInfoModel.deleteMany()
