@@ -33,8 +33,8 @@ export class BlogsService{
     async isBlog(blogId: string): Promise<boolean>{
         return this.blogsDbRepository.isBlog(blogId)
     }
-    async createPostForBlog(id: string, title: string, shortDescription: string, content: string){
-        const newPostId = await this.postsService.createPost(title, shortDescription, content, id);
-        return this.postsDbQueryRepository.findPostById(newPostId.toString())
+    async createPostForBlog(id: string, title: string, shortDescription: string, content: string, userId: string){
+        const newPostId = await this.postsService.createPost(title, shortDescription, content, id, userId);
+        return this.postsDbQueryRepository.findPostById(newPostId.toString(), 'nothing')
     }
 }
