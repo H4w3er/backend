@@ -13,15 +13,9 @@ export class PostsService {
                 protected postsDbQueryRepository: PostsDbQueryRepository,
                 protected jwtService: JwtService) {}
 
-    async createPost(title: string, shortDescription: string, content: string, blogId: string, authToken: string) {
-        let user = null
-        if (authToken) {
-            user = await this.jwtService.getIdFromToken(authToken.split(' ')[1] as string)
-        }
-        if (!user.userId) return 'not found'
+    async createPost(title: string, shortDescription: string, content: string, blogId: string) {
         const newPost = new PostDbTypeModel({
             _id: new ObjectId(),
-            userId: user.userId,
             title: title,
             shortDescription: shortDescription,
             content: content,
@@ -51,13 +45,13 @@ export class PostsService {
     async deletePost(id: string): Promise<boolean> {
         return this.postsDbRepository.deletePost(id)
     }
-    async updatedLikeStatus(newLikeStatus: string, userId: string, postId: string){
+    async updatedLikeStatus(newLikeStatus: string, userId: string, postId: string, userLogin: string){
         const post = await this.postsDbQueryRepository.findPostById(postId, userId)
         if (!post) return 'not found'
         const oldStatus = await this.postsDbQueryRepository.getLikeStatus(userId, postId)
         if (!oldStatus) return 'not found'
         if (oldStatus.status === newLikeStatus) return 'updated'
-        await this.postsDbRepository.updateLikeStatus(newLikeStatus, userId.toString(), postId, oldStatus.status)
+        await this.postsDbRepository.updateLikeStatus(newLikeStatus, userId, postId, oldStatus.status, userLogin)
         return 'updated'
     }
 }
