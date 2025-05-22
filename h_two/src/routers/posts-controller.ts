@@ -18,14 +18,20 @@ export class PostsController {
         const sortDirection = req.query.sortDirection as string
         const pageNumber = req.query.pageNumber as string
         const pageSize = req.query.pageSize as string
-        let posts = await this.postDbQueryRepository.findPosts(sortBy, sortDirection, pageNumber, pageSize)
-        res.send(posts);
+        const authToken = req.headers.authorization as string
+        let user = null
+        let posts = null
+        if (authToken) {
+            user = await this.jwtService.getIdFromToken(authToken.split(' ')[1] as string)
+        }
+        if (!user || !user.userId) posts = await this.postDbQueryRepository.findPosts(sortBy, sortDirection, pageNumber, pageSize, 'nothing')
+        else posts = await this.postDbQueryRepository.findPosts(sortBy, sortDirection, pageNumber, pageSize, user.userId)
+        res.status(200).send(posts);
     }
 
     async createPost(req: Request, res: Response) {
-        const authToken = req.headers.authorization as string
         const newPostId = await this.postsService.createPost(req.body.title, req.body.shortDescription,
-            req.body.content, req.body.blogId, authToken)
+            req.body.content, req.body.blogId)
         if (newPostId == 'not found') res.sendStatus(401)
         else {
             const newPost = await this.postDbQueryRepository.findPostById(newPostId.toString(), 'nothing')
@@ -40,7 +46,6 @@ export class PostsController {
         if (authToken) {
             user = await this.jwtService.getIdFromToken(authToken.split(' ')[1] as string)
         }
-        console.log(user)
         if (!user.userId) post = await this.postDbQueryRepository.findPostById(req.params.id, 'nothing')
         else  post = await this.postDbQueryRepository.findPostById(req.params.id, user.userId)
         if (post) {
@@ -91,8 +96,9 @@ export class PostsController {
     async updatedLikeStatus(req: Request, res: Response) {
         const likeStatus = req.body.likeStatus
         const userId = req.user!._id
+        const userLogin = req.user.userName
         const postId = req.params.id
-        const response = await this.postsService.updatedLikeStatus(likeStatus, userId, postId)
+        const response = await this.postsService.updatedLikeStatus(likeStatus, userId, postId, userLogin)
         if (response === "not found") res.sendStatus(404)
         else res.sendStatus(204)
     }
