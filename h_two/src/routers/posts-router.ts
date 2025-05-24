@@ -3,7 +3,7 @@ import {inputValidationMiddleware} from "../middlewares/input-validation-middlew
 import {authMiddleware} from "../middlewares/authMiddleware";
 import {
     blogIdValidation,
-    contentValidation,
+    contentValidation, likeStatusValidation,
     shortDescriptionValidation,
     titleValidation
 } from "../middlewares/posts-validation";
@@ -30,5 +30,5 @@ postsRouter.post('/:postId/comments', authBearerMiddleware, contentCommentValida
 
 postsRouter.get('/:postId/comments', postsController.getCommentsForPost.bind(postsController))
 
-postsRouter.put('/:id/like-status', authBearerMiddleware, postsController.updatedLikeStatus.bind(postsController))
+postsRouter.put('/:id/like-status', authBearerMiddleware, likeStatusValidation, inputValidationMiddleware, postsController.updatedLikeStatus.bind(postsController))
 
