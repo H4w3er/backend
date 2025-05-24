@@ -46,9 +46,10 @@ export class PostsController {
         if (authToken) {
             user = await this.jwtService.getIdFromToken(authToken.split(' ')[1] as string)
         }
-        if (!user.userId) post = await this.postDbQueryRepository.findPostById(req.params.id, 'nothing')
+        if (!user || !user.userId) post = await this.postDbQueryRepository.findPostById(req.params.id, 'nothing')
         else  post = await this.postDbQueryRepository.findPostById(req.params.id, user.userId)
         if (post) {
+            //console.log(post)
             res.status(200).send(post)
         } else res.sendStatus(404);
     }
