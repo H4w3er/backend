@@ -34,6 +34,7 @@ export class LastLikers {
                 addedAt: string,
                 userId: string,
                 login: string
+                postId: string
             }
         ]
     ) {
@@ -67,7 +68,8 @@ export const LastLikersSchema = new mongoose.Schema<LastLikers>({
         {
             addedAt: {type: String, default: "-"},
             userId: {type: String, default: "-"},
-            login: {type: String, default: "-"}
+            login: {type: String, default: "-"},
+            postId: {type: String, default: "-"}
         }]
 })
 
