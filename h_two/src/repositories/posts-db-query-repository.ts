@@ -24,99 +24,70 @@ export class PostsDbQueryRepository {
         } else return null;
     }
 
-    async postFilterForBlog(blogId: string, sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber: number = 1, pageSize: number = 10, userId: string = 'nothing') {
+    async postFilter(blogId: string, sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber: any = 1, pageSize: any = 10, userId: string = 'nothing') {
         try {
-            // собственно запрос в бд (может быть вынесено во вспомогательный метод)
-            const items = await PostDbTypeModel
-                .find({blogId: blogId})
-                .sort({[sortBy]: sortDirection})
-                .skip((pageNumber - 1) * pageSize)
-                .limit(Number(pageSize))
-                .lean()
-            const totalCount = await PostDbTypeModel.countDocuments({blogId: blogId})
-            const likesInfoArrayForBlog = await LikerPostInfoModel.find({
-                likerId: userId,
-            }).lean()
-
-            const lastLikers = await LastLikersModel.find({}).sort({'newestLikes.addedAt': -1}).limit(3).lean()
-            const newestLikes = lastLikers.flatMap(liker => {
-                return liker.newestLikes?.map(pip => {
-                    return {
-                        addedAt: pip.addedAt,
-                        userId: pip.userId,
-                        login: pip.login
-                    }
-                })
-            })
-
-            const mappedItems = items.map(post => {
-                if (userId === 'nothing') return this.postMapper(post, 'None', newestLikes)
-                else {
-                    for (let likerInfo of likesInfoArrayForBlog) {
-                        if (post._id.toString() === likerInfo.postId) return this.postMapper(post, likerInfo.status, newestLikes)
-                    }
-                    return this.postMapper(post, 'None', newestLikes)
-                }
-            })
-
-            // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
-            return {
-                pagesCount: Math.ceil(totalCount / pageSize),
-                page: Number(pageNumber),
-                pageSize: Number(pageSize),
-                totalCount: totalCount,
-                items: mappedItems
+            let items
+            let totalCount
+            if (blogId != 'nothing') {
+                items = await PostDbTypeModel
+                    .find({blogId: blogId})
+                    .sort({[sortBy]: sortDirection})
+                    .skip((pageNumber - 1) * pageSize)
+                    .limit(Number(pageSize))
+                    .lean()
+                totalCount = await PostDbTypeModel.countDocuments({blogId: blogId})
+            } else {
+                items = await PostDbTypeModel
+                    .find({})
+                    .sort({[sortBy]: sortDirection})
+                    .skip((pageNumber - 1) * pageSize)
+                    .limit(Number(pageSize))
+                    .lean()
+                totalCount = await PostDbTypeModel.countDocuments({})
             }
-        } catch (e) {
-            console.log(e)
-            return {error: 'some error'}
-        }
-    }
-
-    async postFilter(sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber: any = 1, pageSize: any = 10, userId: string = 'nothing') {
-        try {
-            // собственно запрос в бд (может быть вынесено во вспомогательный метод)
-            const items = await PostDbTypeModel
-                .find({})
-                .sort({[sortBy]: sortDirection})
-                .skip((pageNumber - 1) * pageSize)
-                .limit(Number(pageSize))
-                .lean()
-            const totalCount = await PostDbTypeModel.countDocuments()
             const likesInfoArray = await LikerPostInfoModel.find({
                 likerId: userId,
             }).lean()
 
-            const lastLikers = await LastLikersModel.find({}).sort({'newestLikes.addedAt': -1}).limit(3).lean()
-            /*const newestLikes: any[] = lastLikers.flatMap(liker => {
-                return liker.newestLikes?.map(pip => {
-                    return {
-                        addedAt: pip.addedAt,
-                        userId: pip.userId,
-                        login: pip.login
-                    }
-                })
-            })*/
+            const lastLikers = await LastLikersModel.find({}).sort({'newestLikes.addedAt': -1}).lean()
             const newestLikes = lastLikers
-                .flatMap(liker => liker.newestLikes || [])  // flatMap разворачивает верхний уровень
-                .map(pip => ({  // затем маппим каждый элемент
+                .flatMap(liker => liker.newestLikes || [])
+                .map(pip => ({
                     addedAt: pip.addedAt,
                     userId: pip.userId,
-                    login: pip.login
+                    login: pip.login,
+                    postId: pip.postId
                 }));
-            //console.log(newestLikes)
-            //console.log(newestLikes.flat())
+
             const mappedItems = items.map(post => {
-                if (userId === 'nothing') return this.postMapper(post, 'None', newestLikes)
-                else {
-                    for (let likerInfo of likesInfoArray) {
-                        if (post._id.toString() === likerInfo.postId) return this.postMapper(post, likerInfo.status, newestLikes)
+                let pop = []
+                let likeStatus = ''
+                if (userId === 'nothing') {
+                    for (let lastLikers of newestLikes) {
+                        if (post._id.toString() === lastLikers.postId) pop.push({
+                            addedAt: lastLikers.addedAt,
+                            userId: lastLikers.userId,
+                            login: lastLikers.login
+                        })
+                        if (pop.length === 3) break;
                     }
-                    return this.postMapper(post, 'None', newestLikes)
+                    return this.postMapper(post, 'None', pop)
+                } else {
+                    for (let likerInfo of likesInfoArray) {
+                        if (post._id.toString() === likerInfo.postId) likeStatus = likerInfo.status
+                    }
+                    if (likeStatus === '') likeStatus = 'None'
+                    for (let lastLikers of newestLikes) {
+                        if (post._id.toString() === lastLikers.postId) pop.push({
+                            addedAt: lastLikers.addedAt,
+                            userId: lastLikers.userId,
+                            login: lastLikers.login
+                        })
+                        if (pop.length === 3) break;
+                    }
+                    return this.postMapper(post, likeStatus, pop)
                 }
             })
-
-            // формирование ответа в нужном формате (может быть вынесено во вспомогательный метод)
             return {
                 pagesCount: Math.ceil(totalCount / pageSize),
                 page: Number(pageNumber),
@@ -130,17 +101,18 @@ export class PostsDbQueryRepository {
         }
     }
 
+
     async findPosts(sortBy: any, sortDirection: any, pageNumber: string, pageSize: string, userId: string) {
-        return this.postFilter(sortBy, sortDirection, pageNumber, pageSize, userId)
+        return this.postFilter('nothing', sortBy, sortDirection, pageNumber, pageSize, userId)
     }
 
     async findPostById(postId: string, userId: string) {
         const objId = new ObjectId(postId);
         const post: PostDbType | null = await PostDbTypeModel.findOne({_id: objId})
-        const lastLikers = await LastLikersModel.find({}).sort({'newestLikes.addedAt': -1}).limit(3).lean()
+        const lastLikers = await LastLikersModel.find({'newestLikes.postId': postId}).sort({'newestLikes.addedAt': -1}).limit(3).lean()
         const newestLikes = lastLikers
-            .flatMap(liker => liker.newestLikes || [])  // flatMap разворачивает верхний уровень
-            .map(pip => ({  // затем маппим каждый элемент
+            .flatMap(liker => liker.newestLikes || [])
+            .map(pip => ({
                 addedAt: pip.addedAt,
                 userId: pip.userId,
                 login: pip.login
@@ -155,7 +127,7 @@ export class PostsDbQueryRepository {
     }
 
     async postsForBlog(blogId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number, userId: string) {
-        return this.postFilterForBlog(blogId, sortBy, sortDirection, pageNumber, pageSize, userId)
+        return this.postFilter(blogId, sortBy, sortDirection, pageNumber, pageSize, userId)
     }
 
     async getLikeStatus(userId: string, postId: string) {
