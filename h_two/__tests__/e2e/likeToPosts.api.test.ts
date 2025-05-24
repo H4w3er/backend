@@ -27,8 +27,26 @@ describe('Likes to posts tests', () => {
                     "email": "superEmail@mail.com",
                     "password": "string"
                 })
+            const thirdUser = await request(app)
+                .post('/users')
+                .set('Authorization', authorizationToken)
+                .send({
+                    "login": "thirdUser",
+                    "email": "supEmail@mail.com",
+                    "password": "string"
+                })
+            const fourthUser = await request(app)
+                .post('/users')
+                .set('Authorization', authorizationToken)
+                .send({
+                    "login": "fourUser",
+                    "email": "erEmail@mail.com",
+                    "password": "string"
+                })
             expect(firstUser.status).toBe(201)
             expect(secondUser.status).toBe(201)
+            expect(thirdUser.status).toBe(201)
+            expect(fourthUser.status).toBe(201)
         })
 
         it('should login two users, create blog and posts than likes', async () => {
@@ -44,8 +62,22 @@ describe('Likes to posts tests', () => {
                     "loginOrEmail": "secUser",
                     "password": "string"
                 })
+            const thirdUserLogin = await request(app)
+                .post('/auth/login')
+                .send({
+                    "loginOrEmail": "thirdUser",
+                    "password": "string"
+                })
+            const fourthUserLogin = await request(app)
+                .post('/auth/login')
+                .send({
+                    "loginOrEmail": "fourUser",
+                    "password": "string"
+                })
             expect(firstUserLogin.status).toBe(200)
             expect(secondUserLogin.status).toBe(200)
+            expect(thirdUserLogin.status).toBe(200)
+            expect(fourthUserLogin.status).toBe(200)
 
             const authorizationToken = 'Basic admin:qwerty'
             const mainBlogCreation = await request(app)
@@ -70,6 +102,9 @@ describe('Likes to posts tests', () => {
 
             const accessTokenFirst = firstUserLogin.body.accessToken
             const accessTokenSecond = secondUserLogin.body.accessToken
+            const accessTokenThird = thirdUserLogin.body.accessToken
+            const accessTokenFourth = fourthUserLogin.body.accessToken
+
             const likePostByFirstUser = await request(app)
                 .put(`/posts/${firstPostCreation.body.id}/like-status`)
                 .set('Authorization', 'Bearer ' + accessTokenFirst)
@@ -77,7 +112,10 @@ describe('Likes to posts tests', () => {
                     "likeStatus": "Like"
                 })
             expect(likePostByFirstUser.status).toBe(204)
-
+            const getAllPostsByFirstUser = await request(app)
+                .get('/posts')
+                .set('Authorization', 'Bearer ' + accessTokenFirst)
+            console.log(getAllPostsByFirstUser.body.items[0].extendedLikesInfo)
             const likePostBySecUser = await request(app)
                 .put(`/posts/${firstPostCreation.body.id}/like-status`)
                 .set('Authorization', 'Bearer ' + accessTokenSecond)
@@ -85,12 +123,63 @@ describe('Likes to posts tests', () => {
                     "likeStatus": "Like"
                 })
             expect(likePostBySecUser.status).toBe(204)
+            const getAllPostsByThirdtUser = await request(app)
+                .get('/posts')
+                .set('Authorization', 'Bearer ' + accessTokenThird)
+            console.log(getAllPostsByThirdtUser.body.items[0].extendedLikesInfo)
+            /*const likePostByThirdtUser = await request(app)
+                .put(`/posts/${firstPostCreation.body.id}/like-status`)
+                .set('Authorization', 'Bearer ' + accessTokenThird)
+                .send({
+                    "likeStatus": "Like"
+                })
+            expect(likePostByFirstUser.status).toBe(204)
 
+            const likePostByFourthUser = await request(app)
+                .put(`/posts/${firstPostCreation.body.id}/like-status`)
+                .set('Authorization', 'Bearer ' + accessTokenFourth)
+                .send({
+                    "likeStatus": "Like"
+                })
+            expect(likePostBySecUser.status).toBe(204)
 
             const getAllPostsByFirstUser = await request(app)
                 .get('/posts')
+                .set('Authorization', 'Bearer ' + accessTokenFirst)
+
+            expect(getAllPostsByFirstUser.body.items[0].extendedLikesInfo.newestLikes.length).toBe(3)
+            //console.log(getAllPostsByFirstUser.body.items[0].extendedLikesInfo)
+
+            const dislikePostByThirdUser = await request(app)
+                .put(`/posts/${firstPostCreation.body.id}/like-status`)
+                .set('Authorization', 'Bearer ' + accessTokenThird)
+                .send({
+                    "likeStatus": "Dislike"
+                })
+            expect(dislikePostByThirdUser.status).toBe(204)
+
+            const getAllPostsByThirdUser = await request(app)
+                .get('/posts')
+                .set('Authorization', 'Bearer ' + accessTokenThird)
+
+            expect(getAllPostsByThirdUser.body.items[0].extendedLikesInfo.newestLikes.length).toBe(3)
+            expect(getAllPostsByThirdUser.body.items[0].extendedLikesInfo.myStatus).toBe('Dislike')
+            //console.log(getAllPostsByThirdUser.body.items[0].extendedLikesInfo)
+
+            const getPostByIdBySecUser = await request(app)
+                .get(`/posts/${firstPostCreation.body.id}`)
                 .set('Authorization', 'Bearer ' + accessTokenSecond)
-            console.log(getAllPostsByFirstUser.body.items[0].extendedLikesInfo)
+            console.log(getPostByIdBySecUser.body.extendedLikesInfo)
+*/
+            /*const getPostByIdBySecUser = await request(app)
+                .get(`/posts/${firstPostCreation.body.id}`)
+                .set('Authorization', 'Bearer ' + accessTokenSecond)
+            console.log(getPostByIdBySecUser.body.extendedLikesInfo)
+
+            const getAllPostsBySecUser = await request(app)
+                .get('/posts')
+                .set('Authorization', 'Bearer ' + accessTokenSecond)
+            console.log(getAllPostsBySecUser.body.items[0].extendedLikesInfo)*/
         })
     })
 })
