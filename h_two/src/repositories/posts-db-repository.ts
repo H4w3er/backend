@@ -33,7 +33,7 @@ export class PostsDbRepository {
         await LikerPostInfoModel.updateOne({likerId: userId, postId: postId}, {$set: {status: newLikeStatus}})
         if (newLikeStatus === 'None' && oldStatus === 'Like') {
             await PostDbTypeModel.updateOne({_id: postIdObj}, {$inc: {"extendedLikesInfo.likesCount": -1}})
-            await LastLikersModel.deleteOne({'newestLikes.userId': userId})
+            await LastLikersModel.deleteOne({'newestLikes.userId': userId, 'newestLikes.postId': postId})
         }
         if (newLikeStatus === 'None' && oldStatus === 'Dislike') await PostDbTypeModel.updateOne({_id: postIdObj}, {$inc: {"extendedLikesInfo.dislikesCount": -1}})
         if (newLikeStatus === 'Like' && oldStatus === 'Dislike') {
@@ -43,7 +43,8 @@ export class PostsDbRepository {
                 newestLikes: [{
                     addedAt: new Date().toISOString(),
                     userId: userId,
-                    login: userLogin
+                    login: userLogin,
+                    postId: postId
                 }]
             })
         }
@@ -53,7 +54,8 @@ export class PostsDbRepository {
                 newestLikes: [{
                     addedAt: new Date().toISOString(),
                     userId: userId,
-                    login: userLogin
+                    login: userLogin,
+                    postId: postId
                 }]
             })
         }
@@ -61,7 +63,7 @@ export class PostsDbRepository {
         if (newLikeStatus === 'Dislike' && oldStatus === 'Like') {
             await PostDbTypeModel.updateOne({_id: postIdObj}, {$inc: {"extendedLikesInfo.likesCount": -1}})
             await PostDbTypeModel.updateOne({_id: postIdObj}, {$inc: {"extendedLikesInfo.dislikesCount": +1}})
-            await LastLikersModel.deleteOne({'newestLikes.userId': userId})
+            await LastLikersModel.deleteOne({'newestLikes.userId': userId, 'newestLikes.postId': postId})
         }
     }
 }
