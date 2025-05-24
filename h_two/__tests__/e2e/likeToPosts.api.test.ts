@@ -90,7 +90,7 @@ describe('Likes to posts tests', () => {
             const getAllPostsByFirstUser = await request(app)
                 .get('/posts')
                 .set('Authorization', 'Bearer ' + accessTokenSecond)
-            console.log(getAllPostsByFirstUser.body.items[0].extendedLikesInfo.newestLikes)
+            console.log(getAllPostsByFirstUser.body.items[0].extendedLikesInfo)
         })
     })
 })
