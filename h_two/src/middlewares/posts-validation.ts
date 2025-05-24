@@ -12,3 +12,7 @@ export const blogIdValidation= body('blogId').custom(async value => {
     if (!check) throw new Error()
     return true;
 }).withMessage("Blog not found")
+export const likeStatusValidation = body('likeStatus').trim().custom(async value => {
+    if (value !== 'None' && value !== 'Like' && value !== 'Dislike') throw new Error('Cant send it')
+    return true
+})
