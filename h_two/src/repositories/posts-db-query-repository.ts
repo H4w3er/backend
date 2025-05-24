@@ -4,20 +4,6 @@ import {injectable} from "inversify";
 
 @injectable()
 export class PostsDbQueryRepository {
-    async newestLikesCheck() {
-        const lastLikers = await LastLikersModel.find({}).limit(3).lean()
-        const newestLikes = lastLikers.map(liker => {
-            return liker.newestLikes.map(pip => {
-                return {
-                    addedAt: pip.addedAt,
-                    userId: pip.userId,
-                    login: pip.login
-                }
-            })
-        })
-        console.log(newestLikes.flat())
-        return newestLikes.flat()
-    }
     postMapper(value: PostDbType | null, status: string = 'None', info: any[] = []) {
         if (value) {
             return {
@@ -37,6 +23,7 @@ export class PostsDbQueryRepository {
             };
         } else return null;
     }
+
     async postFilterForBlog(blogId: string, sortBy: string = "createdAt", sortDirection: any = 'desc', pageNumber: number = 1, pageSize: number = 10, userId: string = 'nothing') {
         try {
             // собственно запрос в бд (может быть вынесено во вспомогательный метод)
@@ -51,15 +38,24 @@ export class PostsDbQueryRepository {
                 likerId: userId,
             }).lean()
 
-            const lastLikes = await this.newestLikesCheck()
+            const lastLikers = await LastLikersModel.find({}).sort({'newestLikes.addedAt': -1}).limit(3).lean()
+            const newestLikes = lastLikers.flatMap(liker => {
+                return liker.newestLikes?.map(pip => {
+                    return {
+                        addedAt: pip.addedAt,
+                        userId: pip.userId,
+                        login: pip.login
+                    }
+                })
+            })
 
             const mappedItems = items.map(post => {
-                if (userId === 'nothing') return this.postMapper(post, 'None', lastLikes)
+                if (userId === 'nothing') return this.postMapper(post, 'None', newestLikes)
                 else {
                     for (let likerInfo of likesInfoArrayForBlog) {
-                        if (post._id.toString() === likerInfo.postId) return this.postMapper(post, likerInfo.status, lastLikes)
+                        if (post._id.toString() === likerInfo.postId) return this.postMapper(post, likerInfo.status, newestLikes)
                     }
-                    return this.postMapper(post, 'None', lastLikes)
+                    return this.postMapper(post, 'None', newestLikes)
                 }
             })
 
@@ -91,15 +87,32 @@ export class PostsDbQueryRepository {
                 likerId: userId,
             }).lean()
 
-            const lastLikes = await this.newestLikesCheck()
-
+            const lastLikers = await LastLikersModel.find({}).sort({'newestLikes.addedAt': -1}).limit(3).lean()
+            /*const newestLikes: any[] = lastLikers.flatMap(liker => {
+                return liker.newestLikes?.map(pip => {
+                    return {
+                        addedAt: pip.addedAt,
+                        userId: pip.userId,
+                        login: pip.login
+                    }
+                })
+            })*/
+            const newestLikes = lastLikers
+                .flatMap(liker => liker.newestLikes || [])  // flatMap разворачивает верхний уровень
+                .map(pip => ({  // затем маппим каждый элемент
+                    addedAt: pip.addedAt,
+                    userId: pip.userId,
+                    login: pip.login
+                }));
+            //console.log(newestLikes)
+            //console.log(newestLikes.flat())
             const mappedItems = items.map(post => {
-                if (userId === 'nothing') return this.postMapper(post, 'None', lastLikes)
+                if (userId === 'nothing') return this.postMapper(post, 'None', newestLikes)
                 else {
                     for (let likerInfo of likesInfoArray) {
-                        if (post._id.toString() === likerInfo.postId) return this.postMapper(post, likerInfo.status, lastLikes)
+                        if (post._id.toString() === likerInfo.postId) return this.postMapper(post, likerInfo.status, newestLikes)
                     }
-                    return this.postMapper(post, 'None', lastLikes)
+                    return this.postMapper(post, 'None', newestLikes)
                 }
             })
 
@@ -124,13 +137,21 @@ export class PostsDbQueryRepository {
     async findPostById(postId: string, userId: string) {
         const objId = new ObjectId(postId);
         const post: PostDbType | null = await PostDbTypeModel.findOne({_id: objId})
-        if (userId === 'nothing') return this.postMapper(post)
+        const lastLikers = await LastLikersModel.find({}).sort({'newestLikes.addedAt': -1}).limit(3).lean()
+        const newestLikes = lastLikers
+            .flatMap(liker => liker.newestLikes || [])  // flatMap разворачивает верхний уровень
+            .map(pip => ({  // затем маппим каждый элемент
+                addedAt: pip.addedAt,
+                userId: pip.userId,
+                login: pip.login
+            }));
+        if (userId === 'nothing') return this.postMapper(post, 'None', newestLikes)
         let likeInfoPost: LikerPostInfo | null = await LikerPostInfoModel.findOne({likerId: userId, postId: postId})
         if (!likeInfoPost) {
             likeInfoPost = {likerId: userId, status: 'None', postId: postId}
             await LikerPostInfoModel.create(likeInfoPost)
-            return this.postMapper(post, likeInfoPost.status)
-        } else return this.postMapper(post, likeInfoPost.status)
+            return this.postMapper(post, likeInfoPost.status, newestLikes)
+        } else return this.postMapper(post, likeInfoPost.status, newestLikes)
     }
 
     async postsForBlog(blogId: string, sortBy: any, sortDirection: any, pageNumber: number, pageSize: number, userId: string) {
