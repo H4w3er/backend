@@ -32,6 +32,9 @@ import tseslint from 'typescript-eslint';
       "prettier/prettier": [
         "error",
         {
+          "semi": true,
+          "singleQuote": true,
+          "trailingComma": "all",
           "endOfLine": "auto"
         }
       ]

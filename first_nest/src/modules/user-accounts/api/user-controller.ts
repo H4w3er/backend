@@ -2,7 +2,7 @@ import {Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query 
 import { UserService } from '../application/user-service';
 
 @Controller('user-accounts')
-export class UserController {
+export class UsersController {
   constructor(private usersService: UserService) {
   }
 
